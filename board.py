@@ -34,13 +34,15 @@ class BoardClass:
         # Default starting position of player 2 - bottom right corner
         self.board[self.m-1][self.m-1] = 2
         
-        print(">> Board of size " + "(" + str(self.m) + "x" + str(self.m) + 
-              ") created with default locations. The initial board is: ")
+        print("\nBoard of size (" + str(self.m) + "x" + str(self.m) + 
+              ") created with default locations.")
+              
+        print("\nThe initial board is: ")
         
         return self.board
         
         
-    def output_board(self, board):
+    def output_board(self):
         
         hash_array = np.array("#")
         
