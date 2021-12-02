@@ -11,6 +11,8 @@ This program creates a text-based version of the Tron arcade game
 
 import numpy as np
 
+from board import BoardClass
+
 from player import Player1Class
 from player import Player2Class
 
@@ -25,23 +27,13 @@ class TronGame:
         while self.m <= 3:
             print("Board needs to be of size 4 or greater! Please enter another size.")
             self.m = int(input("Enter the board size: "))
-
+            
+            
+        self.board_class = BoardClass(self)
         
-        self.board = np.array([[" " for x in range (self.m)] for y in range(self.m)])
+        self.board = self.board_class.create_board()
         
-        # Default starting position of player 1 - top left corner
-        self.board[0][0] = 1
-        # Default starting position of player 2 - bottom right corner
-        self.board[self.m-1][self.m-1] = 2
-                
-        #   = space not been to,
-        # 1 = space of player 1
-        # 2 = space of player 2
-        # X = space visited by player 1 or player 2
-        
-        print(">> Board of size " + "(" + str(self.m) + "x" + str(self.m) + ") created with default locations. The initial board is: ")
-        
-        print(self.board)
+        self.output_board = self.board_class.output_board(self.board)
         
           
         self.player1 = Player1Class(self)
@@ -59,7 +51,7 @@ class TronGame:
                     
          
             else:
-                print(self.board)
+                self.output_board = self.board_class.output_board(self.board)
                 
                 # Update index of current position of player 1 after moving -
                 # But before player 2's move in case they collide
@@ -70,7 +62,7 @@ class TronGame:
                     game_active = False
     
                 else:
-                    print(self.board)
+                    self.output_board = self.board_class.output_board(self.board)
                     
                     # Update index of current position of player 2 after moving
                     index2 = list(np.where(self.board == "2")) 
