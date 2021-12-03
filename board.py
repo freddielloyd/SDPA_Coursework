@@ -44,6 +44,8 @@ class BoardClass:
         
     def output_board(self):
         
+        #self.board = board
+        
         hash_array = np.array("#")
         
         # Row of hashes of length m to 'frame' top and bottom of output board
@@ -54,6 +56,6 @@ class BoardClass:
         for row in range(self.m):
             print("#|" + "|".join(str(num) for num in self.board[row]) + "|#")
 
-        print("#|" + "|".join(str(wall) for wall in hash_array_row) + "|#")
+        print("#|" + "|".join(str(wall) for wall in hash_array_row) + "|#\n")
     
 
