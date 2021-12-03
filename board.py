@@ -56,3 +56,4 @@ class BoardClass:
 
         print("#|" + "|".join(str(wall) for wall in hash_array_row) + "|#")
     
+

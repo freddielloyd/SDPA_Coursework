@@ -15,6 +15,8 @@ import numpy as np
 from board import BoardClass
 
 from player import PlayerClass
+from player import HumanPlayer
+from player import ComputerPlayer
 
 
 class Tron:
@@ -34,12 +36,12 @@ class Tron:
         if selection == "1":
             print("\nYou will now play a 2-Player Game!")       
             
-            Tron.run_game(self)
+            Tron.run_2player_game(self)
         
         elif selection == "2":
-            print("\nYou would now play a game against the computer!")
+            print("\nYou will now play a game against the computer!")
             
-            Tron()
+            Tron.run_computer_game(self)
         
         
         elif selection != "1" and selection != "2":
@@ -48,8 +50,8 @@ class Tron:
             sys.exit() #terminates program
 
 
-    def run_game(self):
-        """Function creating and managing Tron game"""
+    def run_2player_game(self):
+        """Function creating and managing 2-player Tron game"""
         
         self.m = int(input(">> Enter the board size: "))
         
@@ -123,7 +125,11 @@ class Tron:
             
         elif players_turn == "p2":
             print("\nYou Crashed! Player 1 Wins!")
+            print("Taking you back to game menu!")
 
+        elif players_turn == "cpu":
+            print("\nComputer Crashed! Player 1 Wins!")
+            print("Taking you back to game menu!")
         Tron()               
      
     def _check_players_collision(self, 
@@ -136,16 +142,87 @@ class Tron:
         # Check indexes after each move: do they match?
         if index1 == index2:
             if players_turn == "p1":
-                print ("\nPlayer 1 crashed into Player 2! "
-                  "Player 2 Wins!" 
+                print ("\nPlayer 1 crashed into Player 2! Player 2 Wins!" 
                   "\nTaking you back to game menu!")
                 
             elif players_turn == "p2":
-                print ("\nPlayer 2 crashed into Player 1! "
-                  "Player 1 Wins!" 
+                print ("\nPlayer 2 crashed into Player 1! Player 1 Wins!" 
+                  "\nTaking you back to game menu!")
+                
+            elif players_turn == "cpu":
+                print ("\nComputer crashed into Player 1! Player 1 Wins!" 
                   "\nTaking you back to game menu!")
                 
             Tron()
+            
+            
+        
+        
+    def run_computer_game(self):
+        """Function creating and managing computer Tron game"""
+        
+        self.m = int(input(">> Enter the board size: "))
+        
+        while self.m < 3:
+            print("\nBoard needs to be of size 4 or greater! "
+                  "Please enter another size.")
+            self.m = int(input("Enter the board size: "))
+            
+        self.board_class = BoardClass(self)
+        
+        self.board = self.board_class.create_board()
+        
+        self.output_board = self.board_class.output_board() #to return initial board
+          
+        self.human_player = HumanPlayer(self)
+        
+        self.cpu_player = ComputerPlayer(self)
+
+        game_active = True    
+        
+        # # take initial indexes so can compare after player 1's first move
+        index1 = list(np.where(self.board == "1"))
+        index2 = list(np.where(self.board == "2")) 
+        
+        # Loop for each round of moves within the game
+        while game_active == True:
+            
+            players_turn = "p1"
+            
+            # if self.player.player_move(players_turn) == "Crash":
+            p1_move = self.human_player.human_move()
+                        
+            if p1_move == "Crash":                
+                self._crash_event(players_turn)
+         
+            elif p1_move == "Legal":               
+                self.board_class.output_board()
+                                       
+                # Update index of current position of player 1 after moving -
+                # But before player 2's next move in case they collided
+                index1 = list(np.where(self.board == "1"))
+                
+                self._check_players_collision(players_turn, 
+                                              index1, 
+                                              index2)                
+                    
+                players_turn = "cpu"
+                
+                cpu_move = self.cpu_player.cpu_move()
+    
+                if cpu_move == "Crash":                
+                    self._crash_event(players_turn)
+         
+                elif cpu_move == "Legal":                
+                    self.board_class.output_board()
+                    
+                    # Update index of current position of player 2 after moving -
+                    # But before player 1's next move in case they collided
+                    index2 = list(np.where(self.board == "2"))
+                    
+                    self._check_players_collision(players_turn, 
+                                                  index1, 
+                                                  index2)
         
  
                     
