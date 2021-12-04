@@ -11,18 +11,22 @@ import numpy as np
 
  
 class BoardClass:
-    """Board class containing attributes to store game states (in 2d array) 
-    and players information. Also contains method to print the board."""
-    
-    
+    """A class to represent the board on which the game is played."""
+
+
     def __init__(self, tron_game):
         
         self.m = tron_game.m
+        
+    
     
     
     def create_board(self):
+        """Creates the initial board and returns it."""
                 
-        self.board = np.array([[" " for x in range (self.m)] for y in range(self.m)])
+        self.board = (
+            np.array([[" " for x in range (self.m)] for y in range(self.m)])
+            )
         
         #   = space not been to,
         # 1 = space of player 1
@@ -43,8 +47,7 @@ class BoardClass:
         
         
     def output_board(self):
-        
-        #self.board = board
+        """Prints the board to be displayed to the player(s)."""
         
         hash_array = np.array("#")
         

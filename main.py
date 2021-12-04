@@ -24,55 +24,31 @@ class Tron:
     def __init__(self):
         """Initialize the game's start up screen."""
           
-        print("""
-                  -------- Tron 2D --------
-                  1. 2-Player Game
-                  2. Game vs Computer
-                  Press any other key to exit
-                  """)
-                  
-        selection = input("Enter selection: ")
-            
-        if selection == "1":
-            print("\nYou will now play a 2-Player Game!")       
-            
-            Tron.run_2player_game(self)
-        
-        elif selection == "2":
-            print("\nYou will now play a game against the computer!")
-            
-            Tron.run_computer_game(self)
-        
-        
-        elif selection != "1" and selection != "2":
-            print("\nThank you for playing! Have a good day!")         
-            
-            sys.exit() #terminates program
+        self.startup_menu()
 
 
     def run_2player_game(self):
-        """Function creating and managing 2-player Tron game"""
+        """Creates and manages a 2-player Tron game."""
         
         opponent = "player"
         
         self.m = int(input(">> Enter the board size: "))
         
-        # while self.m <= 3:
-        #     print("\nBoard needs to be of size 4 or greater! "
-        #           "Please enter another size.")
-        #     self.m = int(input("Enter the board size: "))
+        while self.m <= 3:
+            print("\nBoard needs to be of size 4 or greater! "
+                  "Please enter another size.")
+            self.m = int(input("Enter the board size: "))
             
         self.board_class = BoardClass(self)
         
         self.board = self.board_class.create_board()
         
-        self.output_board = self.board_class.output_board() #to return initial board
+        self.board_class.output_board() # Display initial board
           
         self.player = PlayerClass(self)
 
         game_active = True    
         
-        # # take initial indexes so can compare after player 1's first move
         index1 = list(np.where(self.board == "1"))
         index2 = list(np.where(self.board == "2")) 
         
@@ -81,7 +57,6 @@ class Tron:
             
             players_turn = "p1"
             
-            # if self.player.player_move(players_turn) == "Crash":
             p1_move = self.player.player_move(players_turn)
             
             if p1_move == "Crash":                
@@ -92,7 +67,7 @@ class Tron:
                 self.board_class.output_board()
                                        
                 # Update index of current position of player 1 after moving -
-                # But before player 2's next move in case they collided
+                # but before player 2's next move in case they collided
                 index1 = list(np.where(self.board == "1"))
                 
                 self._check_players_collision(players_turn, 
@@ -111,8 +86,6 @@ class Tron:
                 elif p2_move == "Legal":                
                     self.board_class.output_board()
                     
-                    # Update index of current position of player 2 after moving -
-                    # But before player 1's next move in case they collided
                     index2 = list(np.where(self.board == "2"))
                     
                     self._check_players_collision(players_turn, 
@@ -122,34 +95,34 @@ class Tron:
     
     
     def run_computer_game(self):
-        """Function creating and managing computer Tron game"""
+        """Creates and manages a Tron game against a computer player."""
         
         opponent = "cpu"
         
         self.m = int(input(">> Enter the board size: "))
         
         
-        
         # Difficulties: 
         # Easy = random move
         # Medium = random non-suicidal move
-        # Hard = best non-suicidal move
+        # Hard = smart non-suicidal move - 
+        # move in direction with most available spaces
         
         
         self.difficulty = input(">> Enter difficulty level of cpu player "
                                 "(easy/medium/hard): ")
         
         
-        # while self.m < 3:
-        #     print("\nBoard needs to be of size 4 or greater! "
-        #           "Please enter another size.")
-        #     self.m = int(input("Enter the board size: "))
+        while self.m <= 3:
+            print("\nBoard needs to be of size 4 or greater! "
+                  "Please enter another size.")
+            self.m = int(input("Enter the board size: "))
             
         self.board_class = BoardClass(self)
         
         self.board = self.board_class.create_board()
         
-        self.board_class.output_board() #to return initial board
+        self.board_class.output_board() # Display initial board
           
         self.human_player = HumanPlayer(self)
         
@@ -157,7 +130,6 @@ class Tron:
 
         game_active = True    
         
-        # # take initial indexes so can compare after player 1's first move
         index1 = list(np.where(self.board == "1"))
         index2 = list(np.where(self.board == "2")) 
         
@@ -166,8 +138,7 @@ class Tron:
             
             players_turn = "p1"
             
-            # if self.player.player_move(players_turn) == "Crash":
-            p1_move = self.human_player.human_move()
+            p1_move = self.human_player.human_move(players_turn)
                         
             if p1_move == "Crash":                
                 self._crash_event(players_turn,
@@ -198,24 +169,43 @@ class Tron:
                 elif cpu_move_outcome == "Legal":             
                     self.board_class.output_board()
          
-            
-         
-                # Update index of current position of player 2 after moving -
-                # But before player 1's next move in case they collided
                 index2 = list(np.where(self.board == "2"))
                     
                 self._check_players_collision(players_turn, 
                                                   index1, 
                                                   index2,
                                                   opponent)
-         
-                    
 
-                    
-                # else:
-                #     print("WRONG")
 
-    
+
+    def startup_menu(self):
+        """Displays the game's start-up menu and allows player to select 
+        the desired type of game."""
+
+        print("""
+          -------- Tron 2D --------
+          1. 2-Player Game
+          2. Game vs Computer
+          Press any other key to exit
+          """)
+                  
+        selection = input("Enter selection: ")
+            
+        if selection == "1":
+            print("\nYou will now play a 2-Player Game!")       
+            
+            Tron.run_2player_game(self)
+        
+        elif selection == "2":
+            print("\nYou will now play a game against the computer!")
+            
+            Tron.run_computer_game(self)
+        
+        
+        elif selection != "1" and selection != "2":
+            print("\nThank you for playing! Have a good day!")         
+            
+            sys.exit() #terminates program
     
       
     def _crash_event(self, 
