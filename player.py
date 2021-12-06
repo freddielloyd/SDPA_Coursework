@@ -22,17 +22,18 @@ class PlayerClass:
         
         
     def player_move(self, players_turn):
+        """Process player move on the board and return its legality."""
         
         if players_turn == "p1":
             current_index = np.where(self.board == "1")
-            player_move = (
-                input(">> Player 1: What is your move? (left/right/up/down) ")
+            player_move = self._ask_player_move(
+                "Player 1: What is your move? >> "
                 )
 
         elif players_turn == "p2":
             current_index = np.where(self.board == "2")
-            player_move = (
-                input(">> Player 2: What is your move? (left/right/up/down) ")
+            player_move = self._ask_player_move(
+                "Player 2: What is your move? >> "
                 )
 
         # Assign new index as copy of current index
@@ -41,7 +42,7 @@ class PlayerClass:
         new_index = np.copy(current_index)
         
         
-        if player_move == "left":
+        if player_move == "left" or player_move == "l":
                 
             new_index[1] -= 1
             
@@ -61,7 +62,7 @@ class PlayerClass:
             else:
                 return "Crash"
                              
-        elif player_move == "right":
+        elif player_move == "right" or player_move == "r":
             
             new_index[1] += 1
             
@@ -80,7 +81,7 @@ class PlayerClass:
             else:
                 return "Crash"
                           
-        elif player_move == "up":
+        elif player_move == "up" or player_move == "u":
             
             new_index[0] -= 1
             
@@ -99,7 +100,7 @@ class PlayerClass:
             else:
                 return "Crash"
                  
-        elif player_move == "down":
+        elif player_move == "down" or player_move == "d":
             
             new_index[0] += 1
             
@@ -117,8 +118,27 @@ class PlayerClass:
                  
             else:
                 return "Crash"
+            
+            
+    def _ask_player_move(self, prompt):
+        """Ask player for move and raise exception if move invalid."""
+        while True:
+            try:
+                player_move = input(prompt).lower() #.lower so case wont matter
+                if (player_move != "left" and player_move != "l"
+                    and player_move != "right" and player_move != "r"
+                    and player_move != "up" and player_move != "u"
+                    and player_move != "down" and player_move != "d"):
+                        raise InvalidDirectionError
+                    
+            except InvalidDirectionError:
+                print("\nDirection must be left, right, up or down! "
+                      "Please enter a valid direction")
                 
-    
+            else:
+                return player_move
+            
+            
     
 class HumanPlayer(PlayerClass):
     """A class representing a human player in the game"""
@@ -127,8 +147,9 @@ class HumanPlayer(PlayerClass):
         super().__init__(tron_game)
         
         
-    def human_move(self, players_turn = "p1"):
-        """Utiliases player move function from parent class with player = "p1"."""
+    def human_move(self,
+                   players_turn = "p1",):
+        """Utilises player move method from parent class with turn = "p1"."""
         
         return(self.player_move(players_turn))
 
@@ -194,8 +215,35 @@ class ComputerPlayer(PlayerClass):
         if self.difficulty == "hard":
             
             number_legal_moves, possible_moves = self._legal_moves_info()
+            
+            print("Number of legal moves is: " + str(number_legal_moves))
+            print(possible_moves)
+            
 
-            if number_legal_moves > 0:
+            if number_legal_moves == 0: # Crash in random direction
+                
+                cpu_move = random.choice(('left','right','up','down'))
+                
+                move_outcome = self.cpu_move_outcome(current_index, 
+                                                     new_index, 
+                                                     cpu_move)
+            
+                return self.board, move_outcome
+
+            
+            elif number_legal_moves == 1: # Move in only available direction
+                
+                cpu_move = possible_moves[0]
+                
+                move_outcome = self.cpu_move_outcome(current_index, 
+                                                     new_index, 
+                                                     cpu_move)
+            
+                return self.board, move_outcome
+
+
+
+            elif number_legal_moves > 1:
                 
                 current_index = np.where(self.board == "2")
                 
@@ -206,51 +254,65 @@ class ComputerPlayer(PlayerClass):
                 
                 number_pos_moves_left = (
                 np.count_nonzero(self.board[current_row, :current_column] == " ")
+                ) - (
+                np.count_nonzero(self.board[current_row, :current_column] == "X")
                 )
                 
                 number_pos_moves_right = (
                 np.count_nonzero(self.board[current_row, current_column+1:] == " ")
+                ) - (
+                np.count_nonzero(self.board[current_row, current_column+1:] == "X")
                 )
                 
                 number_pos_moves_up = (
                 np.count_nonzero(self.board[:current_row, current_column] == " ")
+                ) - (
+                np.count_nonzero(self.board[:current_row, current_column] == "X")
                 )
                 
                 number_pos_moves_down = (
                 np.count_nonzero(self.board[current_row+1:, current_column] == " ")
+                ) - (
+                np.count_nonzero(self.board[current_row+1:, current_column] == "X")
                 )
                 
                 
                 # Check for trails left and right of current position
                 if current_column > 0 and current_column < self.m - 1:
                 
-                    if self.board[current_row][current_column - 1] == "X":
+                    if (self.board[current_row][current_column - 1] == "X"
+                    or self.board[current_row][current_column - 1] == "1"):
                         number_pos_moves_left = 0
                     
                                 
-                    if self.board[current_row][current_column + 1] == "X":
+                    if (self.board[current_row][current_column + 1] == "X"
+                    or self.board[current_row][current_column + 1] == "1"):
                         number_pos_moves_right = 0
                         
                 # Check for trails left of final column
                 elif current_column == self.m - 1:
                     
-                    if self.board[current_row][current_column - 1] == "X":
+                    if (self.board[current_row][current_column - 1] == "X"
+                    or self.board[current_row][current_column - 1] == "1"):
                         number_pos_moves_left = 0
                         
                 # Check for trails above and below current position
                 if current_row > 0 and current_row < self.m - 1:
              
-                    if self.board[current_row - 1][current_column] == "X":
+                    if (self.board[current_row - 1][current_column] == "X"
+                    or self.board[current_row - 1][current_column] == "1"):
                         number_pos_moves_up = 0
                         
                                     
-                    if self.board[current_row + 1][current_column] == "X":
+                    if (self.board[current_row + 1][current_column] == "X"
+                    or self.board[current_row + 1][current_column] == "1"):
                         number_pos_moves_down = 0
                         
                 # Check for trails above final row 
                 elif current_row == self.m - 1:
                     
-                    if self.board[current_row - 1][current_column] == "X":
+                    if (self.board[current_row - 1][current_column] == "X"
+                    or self.board[current_row - 1][current_column] == "1"):
                         number_pos_moves_up = 0
                 
                 
@@ -278,6 +340,8 @@ class ComputerPlayer(PlayerClass):
                     max_direction = max_string.split("_")[3]
                     
                     cpu_move = max_direction
+                    
+                    print("Max direction is " + str(max_direction))
                 
                 
                 # If there is more than one max direction
@@ -318,9 +382,12 @@ class ComputerPlayer(PlayerClass):
                         
                         max_directions.append(max_strings[i].split("_")[3])
                         
+                    print("Max directions are: ")
+                    print(max_directions)  
                         
                     cpu_move = random.choice((max_directions))
                     
+                print("Chosen move is: " + str(cpu_move))
                     
                 new_index = np.copy(current_index)
                 
@@ -331,15 +398,7 @@ class ComputerPlayer(PlayerClass):
                 return self.board, move_outcome
 
 
-            elif number_legal_moves == 0:
-                
-                cpu_move = random.choice(('left','right','up','down'))
-                
-                move_outcome = self.cpu_move_outcome(current_index, 
-                                                     new_index, 
-                                                     cpu_move)
-            
-                return self.board, move_outcome
+
         
         
         
@@ -482,6 +541,14 @@ class ComputerPlayer(PlayerClass):
             else:
                 return "Crash"
 
-        
-        
+
+
+
+class Error(Exception):
+    """Base class for other exceptions"""
+    
+    
+class InvalidDirectionError(Error):
+    """Raise when input direction is invalid"""
+
         

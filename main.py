@@ -31,15 +31,10 @@ class Tron:
         """Creates and manages a 2-player Tron game."""
         
         opponent = "player"
+                    
+        self.board_class = BoardClass()
         
-        self.m = int(input(">> Enter the board size: "))
-        
-        while self.m <= 3:
-            print("\nBoard needs to be of size 4 or greater! "
-                  "Please enter another size.")
-            self.m = int(input("Enter the board size: "))
-            
-        self.board_class = BoardClass(self)
+        self.m = self.board_class.m
         
         self.board = self.board_class.create_board()
         
@@ -98,9 +93,8 @@ class Tron:
         """Creates and manages a Tron game against a computer player."""
         
         opponent = "cpu"
-        
-        self.m = int(input(">> Enter the board size: "))
-        
+
+        # self.m = self._get_board_size("Enter the board size: >> ")
         
         # Difficulties: 
         # Easy = random move
@@ -108,17 +102,16 @@ class Tron:
         # Hard = smart non-suicidal move - 
         # move in direction with most available spaces
         
-        
-        self.difficulty = input(">> Enter difficulty level of cpu player "
-                                "(easy/medium/hard): ")
-        
-        
-        while self.m <= 3:
-            print("\nBoard needs to be of size 4 or greater! "
-                  "Please enter another size.")
-            self.m = int(input("Enter the board size: "))
             
-        self.board_class = BoardClass(self)
+        self.board_class = BoardClass()
+        
+        self.m = self.board_class.m
+
+        
+        self.difficulty = self._ask_cpu_difficulty(
+            "Enter difficulty level of cpu player "
+                        "(easy/medium/hard): >> "
+            )
         
         self.board = self.board_class.create_board()
         
@@ -158,7 +151,7 @@ class Tron:
                     
                 players_turn = "cpu"
                 
-                # CPU MOVE RETURNS BOARD AND OUTCOME
+                # cpu_move METHOD RETURNS BOARD AND OUTCOME
                 self.board, cpu_move_outcome = self.cpu_player.cpu_move()
                 
     
@@ -189,7 +182,7 @@ class Tron:
           Press any other key to exit
           """)
                   
-        selection = input("Enter selection: ")
+        selection = input("Enter selection: >> ")
             
         if selection == "1":
             print("\nYou will now play a 2-Player Game!")       
@@ -265,10 +258,30 @@ class Tron:
             Tron()
             
             
-        
-        
-        
- 
+    def _ask_cpu_difficulty(self, prompt):
+        """Ask player what difficulty they would like to play against,
+        raise exception if invalid."""
+        while True:
+            try:
+                difficulty = input(prompt).lower() #.lower so case wont matter
+                if (difficulty != "easy"
+                    and difficulty != "medium"
+                    and difficulty != "hard"):
+                        raise InvalidCpuDifficulty
+                    
+            except InvalidCpuDifficulty:
+                print("\n Difficulty must be easy, medium or hard! "
+                      "Please enter a valid difficulty")
+                
+            else:
+                return difficulty  
+            
+class Error(Exception):
+    """Base class for other exceptions"""
+    
+    
+class InvalidCpuDifficulty(Error):
+    """Raise when input cpu difficulty is invalid"""        
                     
 #if __name__ == '__main__':
 Tron()

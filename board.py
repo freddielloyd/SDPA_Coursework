@@ -14,12 +14,10 @@ class BoardClass:
     """A class to represent the board on which the game is played."""
 
 
-    def __init__(self, tron_game):
+    def __init__(self):
         
-        self.m = tron_game.m
-        
-    
-    
+        self.m = self._ask_board_size("Enter the board size: >> ")
+
     
     def create_board(self):
         """Creates the initial board and returns it."""
@@ -60,5 +58,45 @@ class BoardClass:
             print("#|" + "|".join(str(num) for num in self.board[row]) + "|#")
 
         print("#|" + "|".join(str(wall) for wall in hash_array_row) + "|#\n")
-    
+        
+        
+        
+            
+    def _ask_board_size(self, prompt):
+        """Ask player what board size they would like to play on.
+        Raise exceptions if too large or small."""
+        
+        while True:
+            try:
+                result = int(input(prompt))
+                if result <= 3 :
+                    raise BoardTooSmallError
+                elif result >= 15:
+                    raise BoardTooLargeError
+                    
+            except ValueError:
+                print ("\nBoard size must be an integer! "
+                       "Please enter a different board size")
+            except BoardTooSmallError:
+                print("\nBoard size must be greater than 3! "
+                      "Please enter a different board size")
+            except BoardTooLargeError:
+                print("\nBoard size must be less than 15! "
+                      "Please enter a different board size")
+            else:
+                return result
+            
 
+                    
+                
+        
+        
+class Error(Exception):
+    """Base class for other exceptions"""
+    
+class BoardTooSmallError(Error):
+    """Raise when the board size input value is too small"""
+    
+class BoardTooLargeError(Error):
+    """Raise when the board size input value is too large"""
+    
