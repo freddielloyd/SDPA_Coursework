@@ -10,8 +10,6 @@ This program creates a text-based version of the Tron arcade game
 
 import sys
 
-#import numpy as np
-
 from board import BoardClass
 
 from player import HumanPlayer

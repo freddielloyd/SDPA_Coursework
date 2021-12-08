@@ -6,7 +6,7 @@ Created on Tue Nov 23 11:45:17 2021
 @author: freddielloyd
 """
 
-import numpy as np
+#import numpy as np
 
 import random as random
 
@@ -86,7 +86,12 @@ class ComputerPlayer(PlayerClass):
     def cpu_move(self):
         """Process computer move based on the difficulty chosen."""
         
-        current_index = np.where(self.board == "2")
+        #current_index = np.where(self.board == "2") ######################### NP.WHERE
+        
+        for i in range(len(self.board)):
+                if "2" in self.board[i]:
+                    current_index = [i, self.board[i].index("2")]
+                    
 
         #new_index = np.copy(current_index)
 
@@ -144,36 +149,77 @@ class ComputerPlayer(PlayerClass):
 
             elif number_legal_moves > 1:
                 
-                current_index = np.where(self.board == "2")
+                #current_index = np.where(self.board == "2") ##################### np.where
+                
+                print(current_index)
                 
                 current_row = int(current_index[0])
                 
                 current_column = int(current_index[1])
                 
                 
+                                
                 number_pos_moves_left = (
-                np.count_nonzero(self.board[current_row, :current_column] == " ")
-                ) - (
-                np.count_nonzero(self.board[current_row, :current_column] == "X")
-                )
+                    self.board[current_row][:current_column].count(" ")
+                    - self.board[current_row][:current_column].count("X")
+                    - self.board[current_row][:current_column].count("1")
+                    )
                 
                 number_pos_moves_right = (
-                np.count_nonzero(self.board[current_row, current_column+1:] == " ")
-                ) - (
-                np.count_nonzero(self.board[current_row, current_column+1:] == "X")
-                )
+                    self.board[current_row][current_column+1:].count(" ")
+                    - self.board[current_row][current_column+1:].count("X")
+                    - self.board[current_row][current_column+1:].count("1")
+                    )
+                
+                
+                t_board = list(zip(*self.board)) #transpose self.board
                 
                 number_pos_moves_up = (
-                np.count_nonzero(self.board[:current_row, current_column] == " ")
-                ) - (
-                np.count_nonzero(self.board[:current_row, current_column] == "X")
-                )
+                    t_board[current_column][:current_row].count(" ")
+                    - t_board[current_column][:current_row].count("X")
+                    - t_board[current_column][:current_row].count("1")
+                    )
                 
                 number_pos_moves_down = (
-                np.count_nonzero(self.board[current_row+1:, current_column] == " ")
-                ) - (
-                np.count_nonzero(self.board[current_row+1:, current_column] == "X")
-                )
+                    t_board[current_column][current_row+1:].count(" ")
+                    - t_board[current_column][current_row+1:].count("X")
+                    - t_board[current_column][current_row+1:].count("1")
+                    )
+                
+                # number_pos_moves_up = (
+                #     self.board[:current_row][current_column].count(" ") # taking row of up to cur row
+                #     - self.board[:current_row][current_column].count("X")
+                #     )
+                
+                # number_pos_moves_down = (
+                #     self.board[current_row+1:][current_column].count(" ")
+                #     - self.board[current_row+1:][current_column].count("X")
+                #     )
+            
+                
+                # number_pos_moves_left = (
+                # np.count_nonzero(self.board[current_row, :current_column] == " ")
+                # ) - (
+                # np.count_nonzero(self.board[current_row, :current_column] == "X")
+                # )
+                
+                # number_pos_moves_right = (
+                # np.count_nonzero(self.board[current_row, current_column+1:] == " ")
+                # ) - (
+                # np.count_nonzero(self.board[current_row, current_column+1:] == "X")
+                # )
+                
+                # number_pos_moves_up = (
+                # np.count_nonzero(self.board[:current_row, current_column] == " ")
+                # ) - (
+                # np.count_nonzero(self.board[:current_row, current_column] == "X")
+                # )
+                
+                # number_pos_moves_down = (
+                # np.count_nonzero(self.board[current_row+1:, current_column] == " ")
+                # ) - (
+                # np.count_nonzero(self.board[current_row+1:, current_column] == "X")
+                # )
                 
                 
                 # Check for trails left and right of current position
@@ -252,9 +298,18 @@ class ComputerPlayer(PlayerClass):
                     
                     while max_pos_moves in number_pos_moves_copy:
                         
+                        
+                        # # number_pos_moves_copy.pop(max_pos_moves)
+                        
                         max_indexes.append(
-                            number_pos_moves_copy.index(max_pos_moves)
-                            )
+                        number_pos_moves_copy.index(max_pos_moves)
+                        )
+                        
+                        
+                        # number_pos_moves_copy.pop()
+                        
+                        
+     
                         
                         number_pos_moves_copy[max_indexes[0]] = "D"
                         
@@ -316,58 +371,66 @@ class ComputerPlayer(PlayerClass):
         
         
     def _legal_moves_info(self):
-        """Return how many legal directions there are, and what these are."""
+        """Return how many legal directions there are, and what these are.
+        Only related to computer player."""
         
-        current_index = np.where(self.board == "2")
+        #current_index = np.where(self.board == "2")
+        
+        for i in range(len(self.board)):          
+            if "2" in self.board[i]:
+                current_index = [i, self.board[i].index("2")]
+                    
         
         possible_moves = []
         
         number_legal_moves = 0
 
-        new_index = np.copy(current_index)
+        #new_index = np.copy(current_index)
+        
+        new_index = current_index[:]
         
         new_index[1] -= 1
             
         if (new_index[1] >= 0
-            and self.board[tuple(new_index)] != "X"
-            and self.board[tuple(new_index)] != "1"):
+            and self.board[new_index[0]][new_index[1]] != "X"
+            and self.board[new_index[0]][new_index[1]] != "1"):
             
             number_legal_moves += 1
             
             possible_moves.append("left")
 
-        new_index = np.copy(current_index)
+        new_index = current_index[:]
         
         new_index[1] += 1
             
         if (new_index[1] < self.m 
-            and self.board[tuple(new_index)] != "X"
-            and self.board[tuple(new_index)] != "1"):
+            and self.board[new_index[0]][new_index[1]] != "X"
+            and self.board[new_index[0]][new_index[1]] != "1"):
             
             number_legal_moves += 1
             
             possible_moves.append("right")
 
-        new_index = np.copy(current_index)
+        new_index = current_index[:]
         
         new_index[0] -= 1
             
         if (new_index[0] >= 0
-            and self.board[tuple(new_index)] != "X" 
-            and self.board[tuple(new_index)] != "1"):
+            and self.board[new_index[0]][new_index[1]] != "X"
+            and self.board[new_index[0]][new_index[1]] != "1"):
             
             number_legal_moves += 1
             
             possible_moves.append("up")
 
 
-        new_index = np.copy(current_index)
+        new_index = current_index[:]
 
         new_index[0] += 1
         
         if (new_index[0] < self.m 
-            and self.board[tuple(new_index)] != "X" 
-            and self.board[tuple(new_index)] != "1"):
+            and self.board[new_index[0]][new_index[1]] != "X"
+            and self.board[new_index[0]][new_index[1]] != "1"):
             
             number_legal_moves += 1
             

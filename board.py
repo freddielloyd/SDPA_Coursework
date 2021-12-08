@@ -7,7 +7,7 @@ Created on Tue Nov 23 11:44:59 2021
 """
 
 
-import numpy as np
+#import numpy as np
 
 
 
@@ -26,19 +26,21 @@ class BoardClass:
     def create_board(self):
         """Creates the initial board and returns it."""
                 
-        self.board = (
-            np.array([[" " for x in range (self.m)] for y in range(self.m)])
-            )
+        # self.board = (
+        #     np.array([[" " for x in range (self.m)] for y in range(self.m)])
+        #     )
         
+        self.board = [[" " for x in range (self.m)] for y in range(self.m)]
+                
         #   = space not been to,
         # 1 = space of player 1
         # 2 = space of player 2
         # X = space visited by player 1 or player 2
 
         # Default starting position of player 1 - top left corner
-        self.board[0][0] = 1
+        self.board[0][0] = "1"
         # Default starting position of player 2 - bottom right corner
-        self.board[self.m-1][self.m-1] = 2
+        self.board[self.m-1][self.m-1] = "2"
         
         print("\nBoard of size (" + str(self.m) + "x" + str(self.m) + 
               ") created with default locations.")
@@ -51,10 +53,14 @@ class BoardClass:
     def output_board(self):
         """Prints the board to be displayed to the player(s)."""
         
-        hash_array = np.array("#")
+        #hash_array = np.array("#")
+        
+       # hash_array = ["#"]
         
         # Row of hashes of length m to 'frame' top and bottom of output board
-        hash_array_row = hash_array.repeat(self.m)
+        #hash_array_row = hash_array.repeat(self.m)
+        
+        hash_array_row = ["#"] * self.m
         
         print("#|" + "|".join(str(wall) for wall in hash_array_row) + "|#")
       
@@ -73,28 +79,37 @@ class BoardClass:
         """Process chosen move and update board"""
         
         if players_turn == "p1":
-            current_index = np.where(self.board == "1")
+            #current_index = np.where(self.board == "1")
             
+            for i in range(len(self.board)):
+                if "1" in self.board[i]:
+                    current_index = [i, self.board[i].index("1")]
+    
         elif (players_turn == "p2"
               or players_turn == "cpu"):
-            current_index = np.where(self.board == "2")
+            #current_index = np.where(self.board == "2")
+            
+            for i in range(len(self.board)):
+                if "2" in self.board[i]:
+                    current_index = [i, self.board[i].index("2")]
+                    
 
-        
         # Assign new index as copy of current index
         # This is to be able to change array elements of player position -
         # both before and after the move
-        new_index = np.copy(current_index)
-        
-        
+        #new_index = np.copy(current_index)
+    
+        new_index = current_index[:]
+
         if move_direction == "left" or move_direction == "l":
                 
             new_index[1] -= 1
             
             # Legal column index >= 0 as indexes start at 0
             if (new_index[1] >= 0
-                and self.board[tuple(new_index)] != "X"
-                and self.board[tuple(new_index)] != "1"
-                and self.board[tuple(new_index)] != "2"):
+                and self.board[new_index[0]][new_index[1]] != "X"
+                and self.board[new_index[0]][new_index[1]] != "1"
+                and self.board[new_index[0]][new_index[1]] != "2"):
                 
                 self._update_board(players_turn, 
                                    current_index, 
@@ -114,9 +129,9 @@ class BoardClass:
             
             # Legal column index is < m as m-1 is final column
             if (new_index[1] < self.m
-                and self.board[tuple(new_index)] != "X"
-                and self.board[tuple(new_index)] != "1"
-                and self.board[tuple(new_index)] != "2"):
+                and self.board[new_index[0]][new_index[1]] != "X"
+                and self.board[new_index[0]][new_index[1]] != "1"
+                and self.board[new_index[0]][new_index[1]] != "2"):
             
                 self._update_board(players_turn, 
                                    current_index, 
@@ -133,9 +148,9 @@ class BoardClass:
             
             # Legal row index is >= 0 as indexes start at 0
             if (new_index[0] >= 0
-                and self.board[tuple(new_index)] != "X"
-                and self.board[tuple(new_index)] != "1"
-                and self.board[tuple(new_index)] != "2"):
+                and self.board[new_index[0]][new_index[1]] != "X"
+                and self.board[new_index[0]][new_index[1]] != "1"
+                and self.board[new_index[0]][new_index[1]] != "2"):
             
                 self._update_board(players_turn, 
                                    current_index, 
@@ -152,9 +167,9 @@ class BoardClass:
             
             # Legal row index is less than than m as m-1 is final row
             if (new_index[0] < self.m 
-                and self.board[tuple(new_index)] != "X"
-                and self.board[tuple(new_index)] != "1"
-                and self.board[tuple(new_index)] != "2"):
+                and self.board[new_index[0]][new_index[1]] != "X"
+                and self.board[new_index[0]][new_index[1]] != "1"
+                and self.board[new_index[0]][new_index[1]] != "2"):
             
                 self._update_board(players_turn, 
                                    current_index, 
@@ -187,13 +202,13 @@ class BoardClass:
         
     
         # Make array position before moving = "X"
-        self.board[current_index] = "X"
+        self.board[current_index[0]][current_index[1]] = "X"
         
         if players_turn == "p1":
-            self.board[tuple(new_index)] = "1" # Player 1's new position
+            self.board[new_index[0]][new_index[1]] = "1" # Player 1's new position
         elif (players_turn == "p2"
               or players_turn == "cpu"):
-            self.board[tuple(new_index)] = "2" # Player 2's new position
+            self.board[new_index[0]][new_index[1]] = "2" # Player 2's new position
 
         
     
