@@ -9,14 +9,18 @@ Created on Tue Nov 23 11:44:59 2021
 
 import numpy as np
 
+
+
  
 class BoardClass:
     """A class to represent the board on which the game is played."""
 
 
-    def __init__(self):
+    def __init__(self, tron_game):
         
-        self.m = self._ask_board_size("Enter the board size: >> ")
+        #self.m = self._ask_board_size("Enter the board size: >> ")
+        
+        self.m = tron_game.m
 
     
     def create_board(self):
@@ -61,42 +65,193 @@ class BoardClass:
         
         
         
-            
-    def _ask_board_size(self, prompt):
-        """Ask player what board size they would like to play on.
-        Raise exceptions if too large or small."""
+    def process_move(self, 
+                     tron_game, 
+                     players_turn, 
+                     move_direction,
+                     opponent):
+        """Process chosen move and update board"""
         
-        while True:
-            try:
-                result = int(input(prompt))
-                if result <= 3 :
-                    raise BoardTooSmallError
-                elif result >= 15:
-                    raise BoardTooLargeError
+        if players_turn == "p1":
+            current_index = np.where(self.board == "1")
+            
+        elif (players_turn == "p2"
+              or players_turn == "cpu"):
+            current_index = np.where(self.board == "2")
+
+        
+        # Assign new index as copy of current index
+        # This is to be able to change array elements of player position -
+        # both before and after the move
+        new_index = np.copy(current_index)
+        
+        
+        if move_direction == "left" or move_direction == "l":
+                
+            new_index[1] -= 1
+            
+            # Legal column index >= 0 as indexes start at 0
+            if (new_index[1] >= 0
+                and self.board[tuple(new_index)] != "X"
+                and self.board[tuple(new_index)] != "1"
+                and self.board[tuple(new_index)] != "2"):
+                
+                self._update_board(players_turn, 
+                                   current_index, 
+                                   new_index)
                     
-            except ValueError:
-                print ("\nBoard size must be an integer! "
-                       "Please enter a different board size")
-            except BoardTooSmallError:
-                print("\nBoard size must be greater than 3! "
-                      "Please enter a different board size")
-            except BoardTooLargeError:
-                print("\nBoard size must be less than 15! "
-                      "Please enter a different board size")
+                return "Legal"
+                
+            #elif new_index[1] < 0:
+                #self._crash_event_oob(players_turn, 
+                #                      opponent)
             else:
-                return result
+                return "Crash"
+                             
+        elif move_direction == "right" or move_direction == "r":
+            
+            new_index[1] += 1
+            
+            # Legal column index is < m as m-1 is final column
+            if (new_index[1] < self.m
+                and self.board[tuple(new_index)] != "X"
+                and self.board[tuple(new_index)] != "1"
+                and self.board[tuple(new_index)] != "2"):
+            
+                self._update_board(players_turn, 
+                                   current_index, 
+                                   new_index)
+                    
+                return "Legal"
+                
+            else:
+                return "Crash"
+                          
+        elif move_direction == "up" or move_direction == "u":
+            
+            new_index[0] -= 1
+            
+            # Legal row index is >= 0 as indexes start at 0
+            if (new_index[0] >= 0
+                and self.board[tuple(new_index)] != "X"
+                and self.board[tuple(new_index)] != "1"
+                and self.board[tuple(new_index)] != "2"):
+            
+                self._update_board(players_turn, 
+                                   current_index, 
+                                   new_index)
+            
+                return "Legal"
+
+            else:
+                return "Crash"
+                 
+        elif move_direction == "down" or move_direction == "d":
+            
+            new_index[0] += 1
+            
+            # Legal row index is less than than m as m-1 is final row
+            if (new_index[0] < self.m 
+                and self.board[tuple(new_index)] != "X"
+                and self.board[tuple(new_index)] != "1"
+                and self.board[tuple(new_index)] != "2"):
+            
+                self._update_board(players_turn, 
+                                   current_index, 
+                                   new_index)
+                    
+                return "Legal"
+                 
+            else:
+                return "Crash"
+
+        
+        
+        # if p1_move == "Crash":
+        #         self._crash_event(players_turn,
+        #                           self.opponent)
+         
+        # elif p1_move == "Legal":
+        #         self.board_class.output_board()
+        
+        
+    # def _move_legal(self,
+    #                 current_index,
+    #                 new_index):
+        
+    
+    def _update_board(self,
+                     players_turn,
+                     current_index,
+                     new_index):
+        
+    
+        # Make array position before moving = "X"
+        self.board[current_index] = "X"
+        
+        if players_turn == "p1":
+            self.board[tuple(new_index)] = "1" # Player 1's new position
+        elif (players_turn == "p2"
+              or players_turn == "cpu"):
+            self.board[tuple(new_index)] = "2" # Player 2's new position
+
+        
+    
+        
+    def _crash_event(self, 
+                     players_turn,
+                     opponent):
+        """Display output message if a player has crashed out of bounds,
+        into other player, or into the trail of either player."""
+                
+        if players_turn == "p1":
+            
+            if opponent == "player":
+                print("\nPlayer 1 crashed! Player 2 wins!"
+                      "\nTaking you back to game menu!")
+
+            elif opponent == "cpu":
+                print("\nPlayer 1 crashed! Computer wins!"
+                      "\nTaking you back to game menu!")
+            
+        elif players_turn == "p2":
+            print("\nPlayer 2 crashed! Player 1 wins!"
+                  "\nTaking you back to game menu!")
+
+        elif players_turn == "cpu":
+            print("\nComputer crashed! Player 1 wins!"
+                  "\nTaking you back to game menu!")
+        
+        
+    # def _crash_players_collision(self, 
+    #                              players_turn, 
+    #                              opponent):
+    #     """Check equality of current player indices after each move
+    #     and end game if equal"""
+ 
+    #     if players_turn == "p1":
+            
+    #         if opponent == "player":
+    #             print ("\nPlayer 1 crashed into Player 2! Player 2 wins!" 
+    #                    "\nTaking you back to game menu!")
+            
+    #         elif opponent == "cpu":
+    #             print ("\nPlayer 1 crashed into the computer! Computer wins!"
+    #                    "\nTaking you back to game menu!")
+            
+    #     elif players_turn == "p2":
+    #         print ("\nPlayer 2 crashed into Player 1! Player 1 wins!" 
+    #                "\nTaking you back to game menu!")
+            
+    #     elif players_turn == "cpu":
+    #         print ("\nComputer crashed into Player 1! Player 1 wins!" 
+    #                "\nTaking you back to game menu!")
+                
+
+        
+        
+
             
 
-                    
-                
-        
-        
-class Error(Exception):
-    """Base class for other exceptions"""
-    
-class BoardTooSmallError(Error):
-    """Raise when the board size input value is too small"""
-    
-class BoardTooLargeError(Error):
-    """Raise when the board size input value is too large"""
+
     

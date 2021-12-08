@@ -20,106 +20,8 @@ class PlayerClass:
         
         self.board = tron_game.board
         
-        
-    def player_move(self, players_turn):
-        """Process player move on the board and return its legality."""
-        
-        if players_turn == "p1":
-            current_index = np.where(self.board == "1")
-            player_move = self._ask_player_move(
-                "Player 1: What is your move? >> "
-                )
 
-        elif players_turn == "p2":
-            current_index = np.where(self.board == "2")
-            player_move = self._ask_player_move(
-                "Player 2: What is your move? >> "
-                )
-
-        # Assign new index as copy of current index
-        # This is to be able to change array elements of player position -
-        # both before and after the move
-        new_index = np.copy(current_index)
         
-        
-        if player_move == "left" or player_move == "l":
-                
-            new_index[1] -= 1
-            
-            # Legal column index >= 0 as indexes start at 0
-            if new_index[1] >= 0 and self.board[tuple(new_index)] != "X":
-                      
-                # Make array position before moving = "X"
-                self.board[current_index] = "X"
-                
-                if players_turn == "p1":
-                    self.board[tuple(new_index)] = "1" # Player 1's new position
-                elif players_turn == "p2":
-                    self.board[tuple(new_index)] = "2" # Player 2's new position
-                    
-                return "Legal"
-                
-            else:
-                return "Crash"
-                             
-        elif player_move == "right" or player_move == "r":
-            
-            new_index[1] += 1
-            
-            # Legal column index is < m as m-1 is final column
-            if new_index[1] < self.m and self.board[tuple(new_index)] != "X":
-            
-                self.board[current_index] = "X"
-                
-                if players_turn == "p1":
-                    self.board[tuple(new_index)] = "1"
-                elif players_turn == "p2":
-                    self.board[tuple(new_index)] = "2"
-                    
-                return "Legal"
-                
-            else:
-                return "Crash"
-                          
-        elif player_move == "up" or player_move == "u":
-            
-            new_index[0] -= 1
-            
-            # Legal row index is >= 0 as indexes start at 0
-            if new_index[0] >= 0 and self.board[tuple(new_index)] != "X": 
-            
-                self.board[current_index] = "X"
-                
-                if players_turn == "p1":
-                    self.board[tuple(new_index)] = "1"
-                elif players_turn == "p2":
-                    self.board[tuple(new_index)] = "2"
-            
-                return "Legal"
-
-            else:
-                return "Crash"
-                 
-        elif player_move == "down" or player_move == "d":
-            
-            new_index[0] += 1
-            
-            # Legal row index is less than than m as m-1 is final row
-            if new_index[0] < self.m and self.board[tuple(new_index)] != "X":
-            
-                self.board[current_index] = "X"
-                
-                if players_turn == "p1":
-                    self.board[tuple(new_index)] = "1"
-                elif players_turn == "p2":
-                    self.board[tuple(new_index)] = "2"
-                    
-                return "Legal"
-                 
-            else:
-                return "Crash"
-            
-            
     def _ask_player_move(self, prompt):
         """Ask player for move and raise exception if move invalid."""
         while True:
@@ -138,7 +40,7 @@ class PlayerClass:
             else:
                 return player_move
             
-            
+
     
 class HumanPlayer(PlayerClass):
     """A class representing a human player in the game"""
@@ -147,11 +49,25 @@ class HumanPlayer(PlayerClass):
         super().__init__(tron_game)
         
         
-    def human_move(self,
-                   players_turn = "p1",):
-        """Utilises player move method from parent class with turn = "p1"."""
+    
+    def player_move(self, players_turn):
+        """Process player move on the board and return its legality."""
         
-        return(self.player_move(players_turn))
+        if players_turn == "p1":
+            
+            player_move = self._ask_player_move(
+                "Player 1: What is your move? >> "
+                )
+
+        elif players_turn == "p2":
+            
+            player_move = self._ask_player_move(
+                "Player 2: What is your move? >> "
+                )
+            
+        return player_move
+            
+
 
         
 
@@ -161,7 +77,10 @@ class ComputerPlayer(PlayerClass):
     def __init__(self, tron_game):
         super().__init__(tron_game)
         
-        self.difficulty = tron_game.difficulty
+        self.difficulty = self._ask_cpu_difficulty(
+                "Enter difficulty level of cpu player "
+                            "(easy/medium/hard): >> "
+                )
         
         
     def cpu_move(self):
@@ -169,50 +88,38 @@ class ComputerPlayer(PlayerClass):
         
         current_index = np.where(self.board == "2")
 
-        new_index = np.copy(current_index)
+        #new_index = np.copy(current_index)
 
         # RANDOM MOVE
         if self.difficulty == "easy":
             
             cpu_move = random.choice(('left','right','up','down'))
             
-            move_outcome = self.cpu_move_outcome(current_index, 
-                                                 new_index, 
-                                                 cpu_move)
-            
-            return self.board, move_outcome
+            return cpu_move
         
         
         # 'RANDOM NON-SUICIDAL MOVE'
-        if self.difficulty == "medium":
+        elif self.difficulty == "medium":
             
             number_legal_moves, possible_moves = self._legal_moves_info()
             
             if number_legal_moves > 0:
             
                 cpu_move = random.choice(possible_moves)
-                
-                move_outcome = self.cpu_move_outcome(current_index, 
-                                                     new_index, 
-                                                     cpu_move)
 
-                return self.board, move_outcome
+                return cpu_move
             
             
             elif number_legal_moves == 0:
                 
                 cpu_move = random.choice(('left','right','up','down'))
-                
-                move_outcome = self.cpu_move_outcome(current_index, 
-                                                     new_index, 
-                                                     cpu_move)
-            
-                return self.board, move_outcome
+
+                return cpu_move
             
         
         # Smart non-suicidal move - 
         # move in direction with most available spaces
-        if self.difficulty == "hard":
+        elif self.difficulty == "hard":
             
             number_legal_moves, possible_moves = self._legal_moves_info()
             
@@ -223,23 +130,15 @@ class ComputerPlayer(PlayerClass):
             if number_legal_moves == 0: # Crash in random direction
                 
                 cpu_move = random.choice(('left','right','up','down'))
-                
-                move_outcome = self.cpu_move_outcome(current_index, 
-                                                     new_index, 
-                                                     cpu_move)
-            
-                return self.board, move_outcome
+
+                return cpu_move
 
             
             elif number_legal_moves == 1: # Move in only available direction
                 
                 cpu_move = possible_moves[0]
-                
-                move_outcome = self.cpu_move_outcome(current_index, 
-                                                     new_index, 
-                                                     cpu_move)
             
-                return self.board, move_outcome
+                return cpu_move
 
 
 
@@ -363,11 +262,11 @@ class ComputerPlayer(PlayerClass):
                         
                             number_pos_moves_copy[max_indexes[1]] = "D"
                             
-                        if len(max_indexes) == 3:
+                        elif len(max_indexes) == 3:
                         
                             number_pos_moves_copy[max_indexes[2]] = "D"
                             
-                        if len(max_indexes) == 4:
+                        elif len(max_indexes) == 4:
                         
                             number_pos_moves_copy[max_indexes[3]] = "D"
                             
@@ -389,21 +288,35 @@ class ComputerPlayer(PlayerClass):
                     
                 print("Chosen move is: " + str(cpu_move))
                     
-                new_index = np.copy(current_index)
+                # new_index = np.copy(current_index)
                 
-                move_outcome = self.cpu_move_outcome(current_index, 
-                                                     new_index, 
-                                                     cpu_move)
+                return cpu_move
+
+
+
+
+    def _ask_cpu_difficulty(self, prompt):
+        """Ask player what difficulty they would like to play against,
+        raise exception if invalid."""
+        while True:
+            try:
+                difficulty = input(prompt).lower() #.lower so case wont matter
+                if (difficulty != "easy"
+                    and difficulty != "medium"
+                    and difficulty != "hard"):
+                        raise InvalidCpuDifficulty
+                    
+            except InvalidCpuDifficulty:
+                print("\n Difficulty must be easy, medium or hard! "
+                      "Please enter a valid difficulty")
                 
-                return self.board, move_outcome
-
-
-
+            else:
+                return difficulty  
         
         
         
     def _legal_moves_info(self):
-        """Returns how many legal directions there are, and what they are."""
+        """Return how many legal directions there are, and what these are."""
         
         current_index = np.where(self.board == "2")
         
@@ -464,82 +377,7 @@ class ComputerPlayer(PlayerClass):
         return number_legal_moves, possible_moves
 
                         
-            
 
-    def cpu_move_outcome(self, current_index, new_index, cpu_move):
-        """Returns the legality of the computer's move"""
-        
-        if cpu_move == "left":
-                
-            new_index[1] -= 1
-            
-            if new_index[1] >= 0 and self.board[tuple(new_index)] != "X":
-                      
-                self.board[current_index] = "X"
-                
-                #if players_turn == "p1":
-                #    self.board[tuple(new_index)] = "1"
-                #elif players_turn == "p2":
-                self.board[tuple(new_index)] = "2"
-                    
-                return "Legal"
-                
-            else:
-                return "Crash"
-                             
-        elif cpu_move == "right":
-            
-            new_index[1] += 1
-            
-            if (new_index[1] < self.m and self.board[tuple(new_index)] != "X"):
-            
-                self.board[current_index] = "X"
-                
-                #if players_turn == "p1":
-                #    self.board[tuple(new_index)] = "1"
-                #elif players_turn == "p2":
-                self.board[tuple(new_index)] = "2"
-                    
-                return "Legal"
-                
-            else:
-                return "Crash"
-                          
-        elif cpu_move == "up":
-            
-            new_index[0] -= 1
-            
-            if new_index[0] >= 0 and self.board[tuple(new_index)] != "X": 
-            
-                self.board[current_index] = "X"
-                
-                # if players_turn == "p1":
-                #     self.board[tuple(new_index)] = "1"
-                # elif players_turn == "p2":
-                self.board[tuple(new_index)] = "2"
-            
-                return "Legal"
-
-            else:
-                return "Crash"
-                 
-        elif cpu_move == "down":
-            
-            new_index[0] += 1
-            
-            if new_index[0] < self.m and self.board[tuple(new_index)] != "X":
-            
-                self.board[current_index] = "X"
-                
-                # if players_turn == "p1":
-                #     self.board[tuple(new_index)] = "1"
-                # elif players_turn == "p2":
-                self.board[tuple(new_index)] = "2"
-                    
-                return "Legal"
-                 
-            else:
-                return "Crash"
 
 
 
@@ -551,4 +389,7 @@ class Error(Exception):
 class InvalidDirectionError(Error):
     """Raise when input direction is invalid"""
 
+    
+class InvalidCpuDifficulty(Error):
+    """Raise when input cpu difficulty is invalid"""   
         
