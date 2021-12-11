@@ -30,6 +30,7 @@ class BoardClass:
         #     np.array([[" " for x in range (self.m)] for y in range(self.m)])
         #     )
         
+        #board = [[" " for x in range (m)] for y in range(m)]
         self.board = [[" " for x in range (self.m)] for y in range(self.m)]
                 
         #   = space not been to,
@@ -179,6 +180,9 @@ class BoardClass:
                  
             else:
                 return "Crash"
+            
+        elif move_direction == "s":
+            return "Legal"
 
         
         

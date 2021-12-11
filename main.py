@@ -33,13 +33,15 @@ class Tron:
         
         self.board = self.board_class.create_board()
         
-        self.board_class.output_board() # Display initial board after ask for cpu difficulty
+        self.board_class.output_board()
         
         self.human = HumanPlayer(self)
         
         if self.opponent == "cpu":
                     
             self.cpu_player = ComputerPlayer(self)
+            
+            self.difficulty = self.cpu_player.difficulty
 
 
         game_active = True    
@@ -65,6 +67,7 @@ class Tron:
                 self.board_class.output_board()
                         
                              
+                #print(self.board)  
                     
                 if self.opponent == "player":
                     players_turn = "p2"
@@ -73,10 +76,11 @@ class Tron:
                 elif self.opponent == "cpu":
                     players_turn = "cpu"
                     
+                    #print(self.board)
+                    
                     # cpu_move METHOD RETURNS BOARD AND OUTCOME
-                    p2_move_direction = self.cpu_player.cpu_move()
-
-
+                    p2_move_direction = self.cpu_player.cpu_move(self.board)
+                    
                 p2_outcome = self.board_class.process_move(self, 
                                                            players_turn,
                                                            p2_move_direction,
