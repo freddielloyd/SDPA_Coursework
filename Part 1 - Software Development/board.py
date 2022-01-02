@@ -10,7 +10,6 @@ Created on Tue Nov 23 11:44:59 2021
 #import numpy as np
 
 
-
  
 class BoardClass:
     """A class to represent the board on which the game is played."""
@@ -26,9 +25,6 @@ class BoardClass:
     def create_board(self):
         """Creates the initial board and returns it."""
                 
-        # self.board = (
-        #     np.array([[" " for x in range (self.m)] for y in range(self.m)])
-        #     )
         
         #board = [[" " for x in range (m)] for y in range(m)]
         self.board = [[" " for x in range (self.m)] for y in range(self.m)]
@@ -107,20 +103,30 @@ class BoardClass:
             new_index[1] -= 1
             
             # Legal column index >= 0 as indexes start at 0
-            if (new_index[1] >= 0
-                and self.board[new_index[0]][new_index[1]] != "X"
-                and self.board[new_index[0]][new_index[1]] != "1"
-                and self.board[new_index[0]][new_index[1]] != "2"):
+            if new_index[1] >= 0:
                 
-                self._update_board(players_turn, 
-                                   current_index, 
-                                   new_index)
+                if self.board[new_index[0]][new_index[1]] == "1":
+                
+                    return "Draw"
+
+                
+                elif (self.board[new_index[0]][new_index[1]] != "X"
+                # and self.board[new_index[0]][new_index[1]] != "1"
+                    and self.board[new_index[0]][new_index[1]] != "2"):
+            
+                    self._update_board(players_turn, 
+                                       current_index, 
+                                       new_index)
                     
-                return "Legal"
+                    return "Legal"
+                
+                else:
+                    return "Crash"
                 
             #elif new_index[1] < 0:
                 #self._crash_event_oob(players_turn, 
                 #                      opponent)
+                
             else:
                 return "Crash"
                              
@@ -129,17 +135,27 @@ class BoardClass:
             new_index[1] += 1
             
             # Legal column index is < m as m-1 is final column
-            if (new_index[1] < self.m
-                and self.board[new_index[0]][new_index[1]] != "X"
-                and self.board[new_index[0]][new_index[1]] != "1"
-                and self.board[new_index[0]][new_index[1]] != "2"):
-            
-                self._update_board(players_turn, 
-                                   current_index, 
-                                   new_index)
-                    
-                return "Legal"
+            if new_index[1] < self.m:
                 
+                if self.board[new_index[0]][new_index[1]] == "1":
+                    
+                    return "Draw"
+
+
+                
+                elif (self.board[new_index[0]][new_index[1]] != "X"
+                # and self.board[new_index[0]][new_index[1]] != "1"
+                    and self.board[new_index[0]][new_index[1]] != "2"):
+            
+                    self._update_board(players_turn, 
+                                       current_index, 
+                                       new_index)
+                                        
+                    return "Legal"  
+                                
+                else:
+                    return "Crash"
+                                
             else:
                 return "Crash"
                           
@@ -148,16 +164,26 @@ class BoardClass:
             new_index[0] -= 1
             
             # Legal row index is >= 0 as indexes start at 0
-            if (new_index[0] >= 0
-                and self.board[new_index[0]][new_index[1]] != "X"
-                and self.board[new_index[0]][new_index[1]] != "1"
-                and self.board[new_index[0]][new_index[1]] != "2"):
+            if new_index[0] >= 0:
+                
+                if self.board[new_index[0]][new_index[1]] == "1":
+                    
+                    return "Draw"
+
+                
+                elif (self.board[new_index[0]][new_index[1]] != "X"
+                # and self.board[new_index[0]][new_index[1]] != "1"
+                    and self.board[new_index[0]][new_index[1]] != "2"):
             
-                self._update_board(players_turn, 
-                                   current_index, 
-                                   new_index)
+                    self._update_board(players_turn, 
+                                       current_index, 
+                                       new_index)
             
-                return "Legal"
+                    return "Legal"
+                
+                                
+                else:
+                    return "Crash"
 
             else:
                 return "Crash"
@@ -167,22 +193,30 @@ class BoardClass:
             new_index[0] += 1
             
             # Legal row index is less than than m as m-1 is final row
-            if (new_index[0] < self.m 
-                and self.board[new_index[0]][new_index[1]] != "X"
-                and self.board[new_index[0]][new_index[1]] != "1"
-                and self.board[new_index[0]][new_index[1]] != "2"):
+            if new_index[0] < self.m:
+                
+                if self.board[new_index[0]][new_index[1]] == "1":
+                
+                    return "Draw"
+
+                
+                elif (self.board[new_index[0]][new_index[1]] != "X"
+                # and self.board[new_index[0]][new_index[1]] != "1"
+                    and self.board[new_index[0]][new_index[1]] != "2"):
             
-                self._update_board(players_turn, 
-                                   current_index, 
-                                   new_index)
-                    
-                return "Legal"
-                 
+                    self._update_board(players_turn, 
+                                       current_index, 
+                                       new_index)
+                        
+                    return "Legal"
+                
+                                
+                else:
+                    return "Crash"
+                                 
             else:
                 return "Crash"
-            
-        elif move_direction == "s":
-            return "Legal"
+
 
         
         
@@ -240,6 +274,16 @@ class BoardClass:
         elif players_turn == "cpu":
             print("\nComputer crashed! Player 1 wins!"
                   "\nTaking you back to game menu!")
+            
+            
+    def _draw_outcome(self):  
+        """Display draw message if player 2 or computer crashes into
+        player 1 during simultaenous game"""
+    
+        print("\nPlayers crashed into each other! Its a draw!"
+              "\nTaking you back to game menu!")
+
+
         
         
     # def _crash_players_collision(self, 

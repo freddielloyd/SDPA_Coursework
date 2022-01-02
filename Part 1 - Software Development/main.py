@@ -29,19 +29,36 @@ class Tron:
 
         self.m = self._ask_board_size("Enter the board size: >> ")
         
+        self.simultaneous = self._ask_simultaneous("Do you want to play a simultaenous game? (yes/no): >> ")
+        
         self.board_class = BoardClass(self)
         
+
+        
         self.board = self.board_class.create_board()
+        
+        if self.opponent == "cpu":
+            
+            self.difficulty = self._ask_cpu_difficulty(
+                "Enter difficulty level of cpu player "
+                            "(easy/medium/hard): >> "
+                )
+                    
+            self.cpu_player = ComputerPlayer(self,
+                                             )
+            
+            # self.difficulty = self.cpu_player.difficulty
+            
+
+            
         
         self.board_class.output_board()
         
         self.human = HumanPlayer(self)
         
-        if self.opponent == "cpu":
-                    
-            self.cpu_player = ComputerPlayer(self)
-            
-            self.difficulty = self.cpu_player.difficulty
+
+        
+
 
 
         game_active = True    
@@ -64,7 +81,15 @@ class Tron:
                 Tron() # Exit to game menu
          
             if p1_outcome == "Legal":
-                self.board_class.output_board()
+                
+                if self.simultaneous == "no" or self.simultaneous == "n":
+                
+                    # Only print board after p1 move if not simultaneous game
+                    self.board_class.output_board() 
+                    
+                else:
+                    
+                    pass
                         
                              
                 #print(self.board)  
@@ -78,18 +103,30 @@ class Tron:
                     
                     #print(self.board)
                     
-                    # cpu_move METHOD RETURNS BOARD AND OUTCOME
                     p2_move_direction = self.cpu_player.cpu_move(self.board)
                     
                 p2_outcome = self.board_class.process_move(self, 
                                                            players_turn,
                                                            p2_move_direction,
                                                            self.opponent)
+                
+                print(p2_outcome)
                     
                 if p2_outcome == "Crash":                
                     self.board_class._crash_event(players_turn,
                                                   self.opponent)
                     Tron() # Exit to game menu
+                    
+                elif p2_outcome == "Draw":
+                    
+                    if self.simultaneous == "yes" or self.simultaneous == "y":
+                        self.board_class._draw_outcome()
+                    
+                        Tron()
+                    
+                    else:
+                        self.board_class.output_board()
+                    
          
                 elif p2_outcome == "Legal":                
                     self.board_class.output_board()
@@ -102,11 +139,16 @@ class Tron:
         the desired type of game."""
 
         print("""
-          -------- Tron 2D --------
-          1. 2-Player Game
-          2. Game vs Computer
-          Press any other key to exit
-          """)
+         ---------- Tron 2D -----------
+        |                              |
+        |  1. 2-Player Game            |
+        |  2. Game vs Computer         |
+        |  Press any other key to exit | 
+        |                              |
+         ------------------------------
+          """                          
+          )
+          
                   
         selection = input("Enter selection: >> ")
             
@@ -174,10 +216,10 @@ class Tron:
         
         while True:
             try:
-                result = int(input(prompt))
-                if result <= 1 :
+                size = int(input(prompt))
+                if size <= 1 :
                     raise BoardTooSmallError
-                elif result >= 20:
+                elif size >= 20:
                     raise BoardTooLargeError
                     
             except ValueError:
@@ -190,7 +232,42 @@ class Tron:
                 print("\nBoard size must be less than 20! "
                       "Please enter a different board size")
             else:
-                return result
+                return size
+            
+    def _ask_cpu_difficulty(self, prompt):
+        """Ask player what difficulty they would like to play against,
+        raise exception if invalid."""
+        while True:
+            try:
+                difficulty = input(prompt).lower() #.lower so case wont matter
+                if (difficulty != "easy" and difficulty != "e" 
+                    and difficulty != "medium" and difficulty != "m" 
+                    and difficulty != "hard" and difficulty != "h"):
+                        raise InvalidCpuDifficulty
+                    
+            except InvalidCpuDifficulty:
+                print("\n Difficulty must be easy, medium or hard! "
+                      "Please enter a valid difficulty")
+                
+            else:
+                return difficulty
+            
+    def _ask_simultaneous(self, prompt):
+        """Ask player whether they would like to play a simultaneous game.
+        Raise exceptions if too large or small."""
+        
+        while True:
+            try:
+                simultaneous = input(prompt).lower()
+                if (simultaneous != "yes" and simultaneous != "y"
+                    and simultaneous != "no" and simultaneous != "n"):
+                        raise SimultaneousError
+                        
+            except SimultaneousError:
+                print("\nPlease enter yes or no!")
+
+            else:
+                return simultaneous
             
             
     
@@ -204,6 +281,12 @@ class BoardTooSmallError(Error):
     
 class BoardTooLargeError(Error):
     """Raise when the board size input value is too large"""
+    
+class InvalidCpuDifficulty(Error):
+    """Raise when input cpu difficulty is invalid"""   
+    
+class SimultaneousError(Error):
+    """Raise when the simultaneous input is not yes or no"""
          
                     
 #if __name__ == '__main__':

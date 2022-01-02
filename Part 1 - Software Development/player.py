@@ -6,7 +6,6 @@ Created on Tue Nov 23 11:45:17 2021
 @author: freddielloyd
 """
 
-#import numpy as np
 
 import random as random
 
@@ -28,7 +27,7 @@ class PlayerClass:
         """Ask player for move and raise exception if move invalid."""
         while True:
             try:
-                player_move = input(prompt).lower() #.lower so case wont matter
+                player_move = input(prompt).lower() #case doesn't matter
                 if (player_move != "left" and player_move != "l"
                     and player_move != "right" and player_move != "r"
                     and player_move != "up" and player_move != "u"
@@ -79,11 +78,12 @@ class ComputerPlayer(PlayerClass):
     def __init__(self, tron_game):
         super().__init__(tron_game)
         
-        self.difficulty = self._ask_cpu_difficulty(
-                "Enter difficulty level of cpu player "
-                            "(easy/medium/hard): >> "
-                )
+        # self.difficulty = self._ask_cpu_difficulty(
+        #         "Enter difficulty level of cpu player "
+        #                     "(easy/medium/hard): >> "
+        #         )
         
+        self.difficulty = tron_game.difficulty
         
     def cpu_move(self, board):
         """Process computer move based on the difficulty chosen."""
@@ -97,7 +97,7 @@ class ComputerPlayer(PlayerClass):
         #new_index = np.copy(current_index)
 
         # RANDOM MOVE
-        if self.difficulty == "easy":
+        if self.difficulty == "easy" or self.difficulty == "e":
             
             cpu_move = random.choice(('left','right','up','down'))
             
@@ -105,9 +105,9 @@ class ComputerPlayer(PlayerClass):
         
         
         # 'RANDOM NON-SUICIDAL MOVE'
-        elif self.difficulty == "medium":
+        elif self.difficulty == "medium" or self.difficulty == "m":
             
-            possible_moves = self._legal_moves()
+            possible_moves = self._legal_moves(self.board)
             
             if len(possible_moves) > 0:
             
@@ -125,7 +125,7 @@ class ComputerPlayer(PlayerClass):
         
         # Smart non-suicidal move - 
         # move in direction with most available spaces
-        elif self.difficulty == "hard":
+        elif self.difficulty == "hard" or self.difficulty == "h":
             
             #print(self.board)
             
@@ -391,23 +391,7 @@ class ComputerPlayer(PlayerClass):
 
 
 
-    def _ask_cpu_difficulty(self, prompt):
-        """Ask player what difficulty they would like to play against,
-        raise exception if invalid."""
-        while True:
-            try:
-                difficulty = input(prompt).lower() #.lower so case wont matter
-                if (difficulty != "easy"
-                    and difficulty != "medium"
-                    and difficulty != "hard"):
-                        raise InvalidCpuDifficulty
-                    
-            except InvalidCpuDifficulty:
-                print("\n Difficulty must be easy, medium or hard! "
-                      "Please enter a valid difficulty")
-                
-            else:
-                return difficulty
+
             
     def _check_next_move(self,
                          cpu_move):
@@ -548,6 +532,5 @@ class InvalidDirectionError(Error):
     """Raise when input direction is invalid"""
 
     
-class InvalidCpuDifficulty(Error):
-    """Raise when input cpu difficulty is invalid"""   
+
         
