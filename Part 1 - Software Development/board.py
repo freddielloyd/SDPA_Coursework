@@ -3,36 +3,41 @@
 """
 Created on Tue Nov 23 11:44:59 2021
 
-@author: freddielloyd
+@author: Freddie Lloyd
+
+Part 1: Software Development
+
+Contains the board class which possessess methods to manage the board of the 
+Tron game, including the initial creation and processing of moves.
 """
 
-
-#import numpy as np
-
-
- 
 class BoardClass:
-    """A class to represent the board on which the game is played."""
-
-
-    def __init__(self, tron_game):
-        
-        #self.m = self._ask_board_size("Enter the board size: >> ")
-        
-        self.m = tron_game.m
-
+    """
+    A class to represent the board on which the game is played.
     
-    def create_board(self):
-        """Creates the initial board and returns it."""
-                
         
-        #board = [[" " for x in range (m)] for y in range(m)]
-        self.board = [[" " for x in range (self.m)] for y in range(self.m)]
+    Attributes:
+        current_game - The current game of Tron being played   
+    """
+
+    def __init__(self, current_game):
+        
+        self.m = current_game.m
+
+    def create_board(self):
+        """
+        Creates the initial board and returns it.
+        
+        " "   = space not been to,
+        "1" = position of player 1
+        "2" = position of player 2
+        "X" = space visited by player 1 or player 2
+        
+        Returns:
+            self.board - the initial board created
+        """
                 
-        #   = space not been to,
-        # 1 = space of player 1
-        # 2 = space of player 2
-        # X = space visited by player 1 or player 2
+        self.board = [[" " for x in range (self.m)] for y in range(self.m)]
 
         # Default starting position of player 1 - top left corner
         self.board[0][0] = "1"
@@ -45,18 +50,11 @@ class BoardClass:
         print("\nThe initial board is: ")
         
         return self.board
-        
-        
+
     def output_board(self):
-        """Prints the board to be displayed to the player(s)."""
-        
-        #hash_array = np.array("#")
-        
-       # hash_array = ["#"]
-        
+        """Prints the board to the console."""
+ 
         # Row of hashes of length m to 'frame' top and bottom of output board
-        #hash_array_row = hash_array.repeat(self.m)
-        
         hash_array_row = ["#"] * self.m
         
         print("#|" + "|".join(str(wall) for wall in hash_array_row) + "|#")
@@ -69,14 +67,20 @@ class BoardClass:
         
         
     def process_move(self, 
-                     tron_game, 
                      players_turn, 
-                     move_direction,
-                     opponent):
-        """Process chosen move and update board"""
+                     move_direction):
+        """
+        Process chosen player move and return its legality.
+        
+        Parameters: 
+            players_turn - Which players turn it is to move
+            move_direction - The chosen direction of the player
+            
+        Returns:
+            move_result - The outcome of the move
+        """
         
         if players_turn == "p1":
-            #current_index = np.where(self.board == "1")
             
             for i in range(len(self.board)):
                 if "1" in self.board[i]:
@@ -84,17 +88,14 @@ class BoardClass:
     
         elif (players_turn == "p2"
               or players_turn == "cpu"):
-            #current_index = np.where(self.board == "2")
             
             for i in range(len(self.board)):
                 if "2" in self.board[i]:
                     current_index = [i, self.board[i].index("2")]
                     
 
-        # Assign new index as copy of current index
-        # This is to be able to change array elements of player position -
-        # both before and after the move
-        #new_index = np.copy(current_index)
+        # Assign new index as copy of current index to be able to update
+        # board with both new and old positions 
     
         new_index = current_index[:]
 
@@ -106,29 +107,24 @@ class BoardClass:
             if new_index[1] >= 0:
                 
                 if self.board[new_index[0]][new_index[1]] == "1":
-                
-                    return "Draw"
+                    move_result = "potential_draw"
 
-                
                 elif (self.board[new_index[0]][new_index[1]] != "X"
-                # and self.board[new_index[0]][new_index[1]] != "1"
                     and self.board[new_index[0]][new_index[1]] != "2"):
             
                     self._update_board(players_turn, 
                                        current_index, 
                                        new_index)
                     
-                    return "Legal"
+                    move_result = "legal"
                 
-                else:
-                    return "Crash"
+                elif (self.board[new_index[0]][new_index[1]] == "X"
+                      or self.board[new_index[0]][new_index[1]] == "2"):
+                    
+                    move_result = "crash"
                 
-            #elif new_index[1] < 0:
-                #self._crash_event_oob(players_turn, 
-                #                      opponent)
-                
-            else:
-                return "Crash"
+            elif new_index[1] < 0:
+                move_result = "crash"
                              
         elif move_direction == "right" or move_direction == "r":
             
@@ -138,26 +134,24 @@ class BoardClass:
             if new_index[1] < self.m:
                 
                 if self.board[new_index[0]][new_index[1]] == "1":
-                    
-                    return "Draw"
+                    move_result = "potential_draw"
 
-
-                
                 elif (self.board[new_index[0]][new_index[1]] != "X"
-                # and self.board[new_index[0]][new_index[1]] != "1"
                     and self.board[new_index[0]][new_index[1]] != "2"):
             
                     self._update_board(players_turn, 
                                        current_index, 
                                        new_index)
                                         
-                    return "Legal"  
+                    move_result = "legal"  
                                 
-                else:
-                    return "Crash"
+                elif (self.board[new_index[0]][new_index[1]] == "X"
+                      or self.board[new_index[0]][new_index[1]] == "2"):
+                    
+                    move_result = "crash"
                                 
-            else:
-                return "Crash"
+            elif new_index[1] >= self.m:
+                move_result = "crash"
                           
         elif move_direction == "up" or move_direction == "u":
             
@@ -167,26 +161,24 @@ class BoardClass:
             if new_index[0] >= 0:
                 
                 if self.board[new_index[0]][new_index[1]] == "1":
-                    
-                    return "Draw"
+                    move_result = "potential_draw"
 
-                
                 elif (self.board[new_index[0]][new_index[1]] != "X"
-                # and self.board[new_index[0]][new_index[1]] != "1"
                     and self.board[new_index[0]][new_index[1]] != "2"):
             
                     self._update_board(players_turn, 
                                        current_index, 
                                        new_index)
             
-                    return "Legal"
-                
+                    move_result = "legal"
                                 
-                else:
-                    return "Crash"
+                elif (self.board[new_index[0]][new_index[1]] == "X"
+                      or self.board[new_index[0]][new_index[1]] == "2"):
+                    
+                    move_result = "crash"
 
-            else:
-                return "Crash"
+            elif new_index[0] < 0:
+                move_result = "crash"
                  
         elif move_direction == "down" or move_direction == "d":
             
@@ -196,74 +188,77 @@ class BoardClass:
             if new_index[0] < self.m:
                 
                 if self.board[new_index[0]][new_index[1]] == "1":
-                
-                    return "Draw"
-
+                    move_result = "potential_draw"
                 
                 elif (self.board[new_index[0]][new_index[1]] != "X"
-                # and self.board[new_index[0]][new_index[1]] != "1"
                     and self.board[new_index[0]][new_index[1]] != "2"):
             
                     self._update_board(players_turn, 
                                        current_index, 
                                        new_index)
                         
-                    return "Legal"
-                
+                    move_result = "legal"           
                                 
-                else:
-                    return "Crash"
+                elif (self.board[new_index[0]][new_index[1]] == "X"
+                      or self.board[new_index[0]][new_index[1]] == "2"):                    
+                    
+                    move_result = "crash"
                                  
-            else:
-                return "Crash"
+            elif new_index[0] >= self.m:
+                move_result = "crash"
+                
+        return move_result
 
 
-        
-        
-        # if p1_move == "Crash":
-        #         self._crash_event(players_turn,
-        #                           self.opponent)
-         
-        # elif p1_move == "Legal":
-        #         self.board_class.output_board()
-        
-        
-    # def _move_legal(self,
-    #                 current_index,
-    #                 new_index):
-        
     
     def _update_board(self,
                      players_turn,
                      current_index,
                      new_index):
+        """
+        Update board with new position of player after move,
+        as well as marking the position just moved from.
         
+        Parameters: 
+            players_turn - Which players turn it is to move
+            current_index - The current board position of the player
+            new_index - The new board position of the player
+
+        """
     
-        # Make array position before moving = "X"
+        # Mark board position moved from
         self.board[current_index[0]][current_index[1]] = "X"
         
+        # Update board with new position
         if players_turn == "p1":
-            self.board[new_index[0]][new_index[1]] = "1" # Player 1's new position
+            self.board[new_index[0]][new_index[1]] = "1" 
         elif (players_turn == "p2"
               or players_turn == "cpu"):
-            self.board[new_index[0]][new_index[1]] = "2" # Player 2's new position
+            self.board[new_index[0]][new_index[1]] = "2"
 
         
     
         
     def _crash_event(self, 
                      players_turn,
-                     opponent):
-        """Display output message if a player has crashed out of bounds,
-        into other player, or into the trail of either player."""
+                     game_type):
+        """
+        Display output message if a player has crashed out of bounds,
+        into other player, or into the trail of either player.
+        
+        Parameters: 
+            players_turn - Which players turn it is to move
+            game_type - Game against player or computer
+        
+        """
                 
         if players_turn == "p1":
             
-            if opponent == "player":
+            if game_type == "player":
                 print("\nPlayer 1 crashed! Player 2 wins!"
                       "\nTaking you back to game menu!")
 
-            elif opponent == "cpu":
+            elif game_type == "computer":
                 print("\nPlayer 1 crashed! Computer wins!"
                       "\nTaking you back to game menu!")
             
@@ -277,44 +272,14 @@ class BoardClass:
             
             
     def _draw_outcome(self):  
-        """Display draw message if player 2 or computer crashes into
-        player 1 during simultaenous game"""
+        """Display draw message if player 2 or computer collides into
+        player 1 during simultaenous game."""
     
         print("\nPlayers crashed into each other! Its a draw!"
               "\nTaking you back to game menu!")
 
 
+  
         
-        
-    # def _crash_players_collision(self, 
-    #                              players_turn, 
-    #                              opponent):
-    #     """Check equality of current player indices after each move
-    #     and end game if equal"""
- 
-    #     if players_turn == "p1":
-            
-    #         if opponent == "player":
-    #             print ("\nPlayer 1 crashed into Player 2! Player 2 wins!" 
-    #                    "\nTaking you back to game menu!")
-            
-    #         elif opponent == "cpu":
-    #             print ("\nPlayer 1 crashed into the computer! Computer wins!"
-    #                    "\nTaking you back to game menu!")
-            
-    #     elif players_turn == "p2":
-    #         print ("\nPlayer 2 crashed into Player 1! Player 1 wins!" 
-    #                "\nTaking you back to game menu!")
-            
-    #     elif players_turn == "cpu":
-    #         print ("\nComputer crashed into Player 1! Player 1 wins!" 
-    #                "\nTaking you back to game menu!")
-                
-
-        
-        
-
-            
-
 
     
