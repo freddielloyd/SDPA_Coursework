@@ -49,12 +49,46 @@ class PlayerClass:
                 if (player_move != "left" and player_move != "l"
                     and player_move != "right" and player_move != "r"
                     and player_move != "up" and player_move != "u"
-                    and player_move != "down" and player_move != "d" and player_move != "s"):
+                    and player_move != "down" and player_move != "d"):
                         raise InvalidDirectionError
                     
             except InvalidDirectionError:
-                print("\nDirection must be left, right, up or down! "
+                print("\nDirection must be left (l), right (r), up (u) or down (d)! "
                       "Please enter a valid direction!")
+            else:
+                return player_move
+            
+            
+    def _ask_player_hex_move(self, prompt):
+        """
+        Asks player for move, raises exception if invalid.
+        
+        Parameters: 
+            prompt - The question to be asked to the player
+            
+        Returns:
+            player_move - The player's chosen move
+        """
+        while True:
+            try:
+                player_move = input(prompt).lower() # Case of input doesn't matter
+                if (player_move != "left" and player_move != "l"
+                    and player_move != "right" and player_move != "r"
+                    and player_move != "up left" and player_move != "left up"
+                    and player_move != "ul" and player_move != "lu"
+                    and player_move != "up right" and player_move != "right up"
+                    and player_move != "ur" and player_move != "ru"
+                    and player_move != "down left" and player_move != "left down"
+                    and player_move != "dl" and player_move != "ld"
+                    and player_move != "down right" and player_move != "right down"
+                    and player_move != "dr" and player_move != "rd"):
+                        raise InvalidDirectionError
+                    
+            except InvalidDirectionError:
+                print("\nDirection must be left (l), right (r), up left (ul/lu), "
+                      "up right (ur/ru), down left (dl/ld) or down right (dr/rd)! ")
+                      
+                print("\nPlease enter a valid direction!")
             else:
                 return player_move
             
@@ -97,6 +131,34 @@ class HumanPlayer(PlayerClass):
                 )
             
         return player_move
+    
+    def player_hex_move(self, players_turn):
+        """
+        Asks human player for their move in a hex game.
+        
+        Parameters: 
+            players_turn - Which player's turn it is to make a move
+            
+        Returns:
+            player_move - The player's chosen move
+        """
+        
+        if players_turn == "p1":
+            
+            player_move = self._ask_player_hex_move(
+                "Player 1: What is your move? >> "
+                )
+
+        elif players_turn == "p2":
+            
+            player_move = self._ask_player_hex_move(
+                "Player 2: What is your move? >> "
+                )
+            
+        return player_move
+    
+    
+    
             
 
 
