@@ -39,7 +39,7 @@ class Tron:
         self.m = self._ask_board_size("Enter the board size: >> ")
         
         self.simultaneous = self._ask_simultaneous(
-            "Do you want to play a simultaenous game? (yes/no): >> "
+            "Do you want to play a simultaenous game? (y/n) >> "
             )
         
         self.board_class = BoardClass(self)
@@ -55,8 +55,8 @@ class Tron:
             self.cpu_player = ComputerPlayer(self)
             
             difficulty = self._ask_cpu_difficulty(
-                "Enter difficulty level of cpu player "
-                            "(easy/medium/hard): >> "
+                "Enter difficulty level of computer player "
+                                "(easy/medium/hard): >> "
                 )
                     
             
@@ -141,10 +141,10 @@ class Tron:
             game_type - Game against player or computer
         """
 
-        self.m = self._ask_hex_board_size("Enter the hex board size: >> ")
+        self.m = self._ask_hex_board_size("Enter the hexagon board size: >> ")
         
         self.simultaneous = self._ask_simultaneous(
-            "Do you want to play a simultaenous game? (yes/no): >> "
+            "Do you want to play a simultaenous game? (y/n) >> "
             )
         
         self.board_class = BoardClass(self)
@@ -165,8 +165,8 @@ class Tron:
             self.cpu_player = ComputerPlayer(self)
             
             difficulty = self._ask_cpu_difficulty(
-                "Enter difficulty level of cpu player "
-                            "(easy/medium/hard): >> "
+                "Enter difficulty level of computer player "
+                                "(easy/medium/hard): >> "
                 )
             
             
@@ -182,7 +182,7 @@ class Tron:
             p1_move_outcome = self.board_class.process_hex_move(players_turn, 
                                                                 p1_move_direction)
             
-            print(self.board)
+            #print(self.board)
             
             
             if p1_move_outcome == "crash":
@@ -198,17 +198,55 @@ class Tron:
                     # Only print board after p1 move if not simultaneous game
                     self.board_class.output_hex_board()
                     
-                    print(self.board)
+                    #print(self.board)
                     
                 else:
                     pass
 
-        
-
-
-
-
-
+            print() # Creates a space between hexagons
+                                    
+            if game_type == "player":
+                
+                players_turn = "p2"
+                p2_move_direction = self.human_player.player_hex_move(players_turn)
+                
+            elif game_type == "computer":
+                
+                players_turn = "cpu"
+                p2_move_direction = self.cpu_player.cpu_hex_move(self.board,
+                                                                 difficulty)
+                
+            p2_move_outcome = self.board_class.process_hex_move(players_turn,
+                                                                p2_move_direction)
+                 
+ 
+            if p2_move_outcome == "crash":   
+                
+                self.board_class._crash_event(players_turn,
+                                              game_type)
+                Tron()
+                
+            elif p2_move_outcome == "potential_draw":
+                
+                if self.simultaneous == "yes" or self.simultaneous == "y":
+                    
+                    self.board_class._draw_outcome()
+                
+                    Tron()
+                
+                elif self.simultaneous == "no" or self.simultaneous == "n":
+                    
+                    self.board_class._crash_event(players_turn,
+                                                  game_type)
+                    
+                    Tron()
+                
+     
+            elif p2_move_outcome == "legal":   
+                
+                self.board_class.output_hex_board()
+                
+                
 
 
 
@@ -238,30 +276,51 @@ class Tron:
             
         if selection == "1":
             
-            print("\nYou will now play a 2-Player Game!") 
-            
             game_type = "player"
+            
+            hexagon = self._ask_hexagon("\nDo you want to play on a hexagon board? (y/n) >> ")
+            
+            if hexagon == "no" or hexagon == "n":
+
+                print("\nYou will now play a regular 2-player game!")
+                
+                Tron.run_game(self,
+                              game_type)
+                
+            elif hexagon == "yes" or hexagon == "y":
+                
+                print("\nYou will now play a 2-player hexagon game!")
+                
+                Tron.run_hex_game(self, 
+                                  game_type)
+
+            
+            print("\nYou will now play a 2-Player Game!") 
         
             Tron.run_game(self,
                           game_type)
         
         elif selection == "2":
             
-            print("\nYou will now play a game against the computer!")
-            
             game_type = "computer"
             
-            Tron.run_game(self,
-                          game_type)
+            hexagon = self._ask_hexagon("\nDo you want to play on a hexagon board? (y/n) >> ")
             
-        elif selection == "3":
-            
-            print("\nYou will now play a hexagon game!")
-            
-            game_type = "player"
-            
-            Tron.run_hex_game(self,
+            if hexagon == "no" or hexagon == "n":
+
+                print("\nYou will now play a regular game against the computer!")
+                
+                Tron.run_game(self,
                               game_type)
+                
+            elif hexagon == "yes" or hexagon == "y":
+                
+                print("\nYou will now play a hexagon game against the computer!")
+            
+                
+                Tron.run_hex_game(self, 
+                                  game_type)
+
 
         elif selection != "1" and selection != "2":
             
@@ -303,42 +362,6 @@ class Tron:
                 return board_size
             
             
-    def _ask_hex_board_size(self, prompt):
-        """
-        Ask player what hex board size they would like to play on,
-        raise exceptions if too small, large or not an odd number.
-                
-        Parameters: 
-            prompt - The question to be asked to the player
-            
-        Returns:
-            board_size - The desired size of the hex board
-        """      
-        while True:
-            try:
-                board_size = int(input(prompt))
-                if board_size % 2 == 0:
-                    raise HexBoardNotOddNumberError
-                if board_size < 5 :
-                    raise BoardTooSmallError
-                elif board_size > 13:
-                    raise BoardTooLargeError
-                
-                    
-            except ValueError:
-                print ("\nBoard size must be an integer! "
-                       "Please enter a different board size!")
-            except HexBoardNotOddNumberError:
-                print("\nBoard size must be an odd integer! "
-                      "Please enter a different board size!")
-            except BoardTooSmallError:
-                print("\nBoard size must be greater than 5! "
-                      "Please enter a different board size!")
-            except BoardTooLargeError:
-                print("\nBoard size must be less than 20! "
-                      "Please enter a different board size!")
-            else:
-                return board_size
             
     def _ask_cpu_difficulty(self, prompt):
         """
@@ -382,19 +405,84 @@ class Tron:
                 simultaneous = input(prompt).lower()
                 if (simultaneous != "yes" and simultaneous != "y"
                     and simultaneous != "no" and simultaneous != "n"):
-                        raise SimultaneousError    
+                        raise YesNoError    
                         
-            except SimultaneousError:
+            except YesNoError:
                 print("\nPlease enter yes or no!")
             else:
                 return simultaneous
+            
+    def _ask_hexagon(self, prompt):
+        """
+        Ask player whether they would like to play a hexagon game,
+        raise exception if invalid answer given.
+        
+        Parameters: 
+            prompt - The question to be asked to the player
+            
+        Returns:
+            hexagon - Whether they would like to play on a hexagon grid.
+        """   
+        while True:
+            try:
+                hexagon = input(prompt).lower()
+                if (hexagon != "yes" and hexagon != "y"
+                    and hexagon != "no" and hexagon != "n"):
+                        raise YesNoError    
+                        
+            except YesNoError:
+                print("\nPlease enter yes or no!")
+            else:
+                return hexagon
+            
+            
+            
+    def _ask_hex_board_size(self, prompt):
+        """
+        Ask player what hexagon board size they would like to play on,
+        raise exceptions if too small, large or not an odd number.
+                
+        Parameters: 
+            prompt - The question to be asked to the player
+            
+        Returns:
+            board_size - The desired size of the hex board
+        """      
+        while True:
+            try:
+                board_size = int(input(prompt))
+                if board_size % 2 == 0:
+                    raise EvenNumberError
+                if board_size < 5 :
+                    raise BoardTooSmallError
+                elif board_size > 13:
+                    raise BoardTooLargeError    
+                    
+            except ValueError:
+                print ("\nBoard size must be an integer! "
+                       "Please enter a different board size!")
+            except EvenNumberError:
+                print("\nBoard size must be an odd integer! "
+                      "Please enter a different board size!")
+            except BoardTooSmallError:
+                print("\nBoard size must be greater than 5! "
+                      "Please enter a different board size!")
+            except BoardTooLargeError:
+                print("\nBoard size must be 11 or less  ! "
+                      "Please enter a different board size!")
+            else:
+                return board_size
+            
+            
+            
+            
             
 
             
 class Error(Exception):
     """Base class for other exceptions"""
     
-class HexBoardNotOddNumberError(Error):
+class EvenNumberError(Error):
     """Raise when the board size input value is an even number"""
     
 class BoardTooSmallError(Error):
@@ -406,8 +494,8 @@ class BoardTooLargeError(Error):
 class InvalidCpuDifficulty(Error):
     """Raise when input cpu difficulty is invalid"""   
     
-class SimultaneousError(Error):
-    """Raise when the simultaneous input is not yes or no"""
+class YesNoError(Error):
+    """Raise when the input was yes or no"""
          
                     
 

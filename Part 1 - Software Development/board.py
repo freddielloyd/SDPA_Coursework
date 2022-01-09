@@ -426,7 +426,7 @@ class BoardClass:
         fboard[self.m-3][(self.m//2)-2:] = new_3rdfinal_row
         
 
-        print(fboard)
+        #print(fboard)
         
         fboard[0][0] = "O" #top left corner
         fboard[self.m-1][0] = "O" #bottom left corner
@@ -461,17 +461,12 @@ class BoardClass:
             #fboard[m-2][m-2] = " "
             
             #fboard[m-1][m-1] = " "
-            
-            
-            
+
             l = l - 2         
             row = row - 1
             
-        print(fboard)
-            
-            
+        #print(fboard)
 
-    
         for y in range(self.m):
             
             # Display the top half of the hexagon:
@@ -562,7 +557,7 @@ class BoardClass:
             
             if new_index[1] >= 0:
             
-                if (self.board[new_index[0]][new_index[1]] == "O"
+                if (self.board[new_index[0]][new_index[1]] == "X"
                     or self.board[new_index[0]][new_index[1]] == "N"
                     or self.board[new_index[0]][new_index[1]] == "2"):
                     
@@ -581,8 +576,6 @@ class BoardClass:
             elif new_index[1] < 0:
                 move_result = "crash"
                     
-                
-                ######
                              
         elif move_direction == "right" or move_direction == "r":
             
@@ -591,7 +584,7 @@ class BoardClass:
             # Legal column index is < m as m-1 is final column
             if new_index[1] < self.m:
                 
-                if (self.board[new_index[0]][new_index[1]] == "O"
+                if (self.board[new_index[0]][new_index[1]] == "X"
                     or self.board[new_index[0]][new_index[1]] == "N"
                     or self.board[new_index[0]][new_index[1]] == "2"):
                     
@@ -609,18 +602,73 @@ class BoardClass:
                                 
             elif new_index[1] >= self.m:
                 move_result = "crash"
-                          
- 
-        elif (move_direction == "left down" or move_direction == "down left"
-              or move_direction == "ld" or move_direction == "dl"):
+                
+                
+        elif (move_direction == "up left" or move_direction == "left up"
+              or move_direction == "ul" or move_direction == "lu"):
             
-            # LEFT DOWN = ONE SPACE DOWN AND ONE SPACE LEFT
+            new_index[0] -= 1 # One up
+            #new_index[1] -= 1 # One left
+                        
+            if new_index[0] >= 0:
+                
+                if (self.board[new_index[0]][new_index[1]] == "X"
+                    or self.board[new_index[0]][new_index[1]] == "N"
+                    or self.board[new_index[0]][new_index[1]] == "2"):
+                    
+                    move_result = "crash"
+                
+                elif self.board[new_index[0]][new_index[1]] == "1":
+                        move_result = "potential_draw"
+                
+                elif self.board[new_index[0]][new_index[1]] == " ":
+                        self._update_board(players_turn, 
+                                           current_index, 
+                                           new_index)
+                        
+                        move_result = "legal"            
+
+            elif new_index[0] < 0:
+                move_result = "crash"
+                
+                                                     
+        elif (move_direction == "up right" or move_direction == "right up"
+              or move_direction == "ur" or move_direction == "ru"):
+            
+            new_index[0] -= 1 # One up
+            new_index[1] += 1 # One right
+                        
+            if new_index[0] >= 0 and new_index[1] < self.m:
+                
+                if (self.board[new_index[0]][new_index[1]] == "X"
+                    or self.board[new_index[0]][new_index[1]] == "N"
+                    or self.board[new_index[0]][new_index[1]] == "2"):
+                    
+                    move_result = "crash"
+                
+                elif self.board[new_index[0]][new_index[1]] == "1":
+                        move_result = "potential_draw"
+                
+                elif self.board[new_index[0]][new_index[1]] == " ":
+                        self._update_board(players_turn, 
+                                           current_index, 
+                                           new_index)
+                        
+                        move_result = "legal"            
+
+            elif new_index[0] < 0 or new_index[1] >= self.m: 
+                move_result = "crash"
+                 
+                
+        elif (move_direction == "down left" or move_direction == "left down"
+              or move_direction == "dl" or move_direction == "ld"):
+            
             new_index[0] += 1 # One down
             new_index[1] -= 1 # One left
                         
             if new_index[0] < self.m and new_index[1] >= 0:
                 
-                if (self.board[new_index[0]][new_index[1]] == "O"
+                if (self.board[new_index[0]][new_index[1]] == "X"
                     or self.board[new_index[0]][new_index[1]] == "N"
                     or self.board[new_index[0]][new_index[1]] == "2"):
                     
@@ -640,46 +688,19 @@ class BoardClass:
                 move_result = "crash"
                 
                 
-        elif (move_direction == "left up" or move_direction == "up left"
-              or move_direction == "lu" or move_direction == "ul"):
-            
-            # LEFT DOWN = ONE SPACE DOWN AND ONE SPACE LEFT
-            new_index[0] -= 1 # One up
-            #new_index[1] -= 1 # One left
-                        
-            if new_index[0] >= 0:
-                
-                if (self.board[new_index[0]][new_index[1]] == "O"
-                    or self.board[new_index[0]][new_index[1]] == "N"
-                    or self.board[new_index[0]][new_index[1]] == "2"):
-                    
-                    move_result = "crash"
-                
-                elif self.board[new_index[0]][new_index[1]] == "1":
-                        move_result = "potential_draw"
-                
-                elif self.board[new_index[0]][new_index[1]] == " ":
-                        self._update_board(players_turn, 
-                                           current_index, 
-                                           new_index)
-                        
-                        move_result = "legal"            
-
-            elif new_index[0] < 0:
+    
                 move_result = "crash"
                  
                 
-                 
-        elif (move_direction == "right down" or move_direction == "down right"
-              or move_direction == "rd" or move_direction == "dr"):
+        elif (move_direction == "down right" or move_direction == "right down"
+              or move_direction == "dr" or move_direction == "rd"):
             
-            # RIGHT DOWN/UP IS DIFFERENT - JUST DOWN/UP ONE ON BOARD
             new_index[0] += 1 # One down
             #new_index[1] += 1 # One right
                         
             if new_index[0] < self.m:
                 
-                if (self.board[new_index[0]][new_index[1]] == "O"
+                if (self.board[new_index[0]][new_index[1]] == "X"
                     or self.board[new_index[0]][new_index[1]] == "N"
                     or self.board[new_index[0]][new_index[1]] == "2"):
                     
@@ -698,38 +719,7 @@ class BoardClass:
             elif new_index[0] >= self.m:
                 move_result = "crash"
                 
-                
-                
-                         
-        elif (move_direction == "right up" or move_direction == "right up"
-              or move_direction == "ru" or move_direction == "ur"):
-            
-            # RIGHT DOWN AND LEFT UP ARE DIFFERENT - JUST DOWN/UP ONE ON BOARD
-            new_index[0] -= 1 # One up
-            new_index[1] += 1 # One right
-                        
-            if new_index[0] >= 0 and new_index[1] < self.m:
-                
-                if (self.board[new_index[0]][new_index[1]] == "O"
-                    or self.board[new_index[0]][new_index[1]] == "N"
-                    or self.board[new_index[0]][new_index[1]] == "2"):
-                    
-                    move_result = "crash"
-                
-                elif self.board[new_index[0]][new_index[1]] == "1":
-                        move_result = "potential_draw"
-                
-                elif self.board[new_index[0]][new_index[1]] == " ":
-                        self._update_board(players_turn, 
-                                           current_index, 
-                                           new_index)
-                        
-                        move_result = "legal"            
 
-            elif new_index[0] < 0 or new_index[1] >= self.m: 
-                move_result = "crash"
-                
-                
         return move_result
                 
          

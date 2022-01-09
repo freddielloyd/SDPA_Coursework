@@ -61,7 +61,8 @@ class PlayerClass:
             
     def _ask_player_hex_move(self, prompt):
         """
-        Asks player for move, raises exception if invalid.
+        Asks player for move in a hexagon game, raises exception 
+        if invalid.
         
         Parameters: 
             prompt - The question to be asked to the player
@@ -243,11 +244,89 @@ class ComputerPlayer(PlayerClass):
         # Return chosen move of any difficulty level
         return cpu_move
     
+    
+    
+    def cpu_hex_move(self, 
+                     board,
+                     difficulty):
+        """
+        Determines computer player's move in a hexagon game based on chosen 
+        difficulty level.
+        
+        Parameters: 
+            board - The current board state before the cpu's move
+            difficulty - The selected difficulty level of the computer player
+            
+        Returns:
+            cpu_move - The direction selected for the computer player to move in
+        """
+
+        self.board = board
+
+        # Easy difficulty is a random move in any direction
+        if difficulty == "easy" or difficulty == "e":
+            
+            cpu_move = random.choice(('left',
+                                      'right',
+                                      'up left',
+                                      'up right'
+                                      'down left'
+                                      'down right'))
+            
+        
+        # Medium diffiulty is a random non-suicidal move
+        elif difficulty == "medium" or difficulty == "m":
+            
+            # Retrieve non-suicidal directions
+            possible_moves = self._legal_hex_moves(self.board)
+            
+            if len(possible_moves) > 0:
+
+                cpu_move = random.choice(possible_moves)
+            
+            elif len(possible_moves) == 0:
+                
+                cpu_move = random.choice(('left',
+                                          'right',
+                                          'up left',
+                                          'up right'
+                                          'down left'
+                                          'down right'))            
+            
+        # Hard difficulty is a smart move in the direction with most available 
+        # spaces, whilst avoiding moves that in result in suicide next turn.
+        elif difficulty == "hard" or difficulty == "h":
+            
+            possible_moves = self._legal_hex_moves(self.board)
+
+            # print("Number of legal moves is: " + str(len(possible_moves)))
+            # print(possible_moves)
+
+            if len(possible_moves) == 0:
+                
+                # Crash in random direction
+                cpu_move = random.choice(('left','right','up','down'))
+
+            
+            elif len(possible_moves) == 1:
+                
+                # Move in only available direction
+                cpu_move = possible_moves[0]
+
+
+            elif len(possible_moves) > 1:
+                
+                cpu_move = self._choose_between_moves()
+
+        # Return chosen move of any difficulty level
+        return cpu_move
+    
+    
             
         
     def _legal_moves(self, board):
         """Given the state of a board, returns what legal directions the cpu
-        can move in.
+        player can move in on a regular square board.
         
         Parameters: 
             board - The board to check the possible legal moves for
@@ -314,6 +393,111 @@ class ComputerPlayer(PlayerClass):
             possible_moves.append("down")
 
         return possible_moves
+    
+          
+    def _legal_hex_moves(self, board):
+        """Given the state of a board, returns what legal directions the cpu
+        player can move in on a hexagon board.
+        
+        Parameters: 
+            board - The board to check the possible legal moves for
+            
+        Returns:
+            possible_moves - The legal directions that can be moved in
+        """
+        
+        # Receives a board argument to be able to check legal moves
+        # for either the actual board or a copy board
+        self.board = board
+        
+        for i in range(len(self.board)):          
+            if "2" in self.board[i]:
+                current_index = [i, self.board[i].index("2")]
+                    
+        # Create empty list to append legal moves to
+        possible_moves = []
+        
+        # Create a copy of current index of player 2 to be able to check
+        # each direction indiviually
+        new_index = current_index[:]
+        
+        # Check left move
+        new_index[1] -= 1
+            
+        if (new_index[1] >= 0
+            and self.board[new_index[0]][new_index[1]] != "X"
+            and self.board[new_index[0]][new_index[1]] != "N"
+            and self.board[new_index[0]][new_index[1]] != "2"):
+            
+            possible_moves.append("left")
+
+        new_index = current_index[:]
+        
+        # Check right move
+        new_index[1] += 1
+            
+        if (new_index[1] < self.m 
+            and self.board[new_index[0]][new_index[1]] != "X"
+            and self.board[new_index[0]][new_index[1]] != "N"
+            and self.board[new_index[0]][new_index[1]] != "2"):
+            
+            possible_moves.append("right")
+
+        new_index = current_index[:]
+        
+        # Check up left move
+        new_index[0] -= 1
+            
+        if (new_index[0] >= 0
+            and self.board[new_index[0]][new_index[1]] != "X"
+            and self.board[new_index[0]][new_index[1]] != "N"
+            and self.board[new_index[0]][new_index[1]] != "2"):
+            
+            possible_moves.append("up left")
+
+        new_index = current_index[:]
+
+        # Check up right move
+        new_index[0] -= 1 
+        new_index[1] += 1 
+        
+        if (new_index[0] >= 0
+            and new_index[1] < self.m
+            and self.board[new_index[0]][new_index[1]] != "X"
+            and self.board[new_index[0]][new_index[1]] != "N"
+            and self.board[new_index[0]][new_index[1]] != "2"):
+            
+            possible_moves.append("up right")
+    
+        new_index = current_index[:]
+        
+        # Check down left move
+        new_index[0] += 1
+        new_index[1] -= 1
+            
+        if (new_index[0] < self.m
+            and new_index[1] >= 0
+            and self.board[new_index[0]][new_index[1]] != "X"
+            and self.board[new_index[0]][new_index[1]] != "N"
+            and self.board[new_index[0]][new_index[1]] != "2"):
+            
+            possible_moves.append("down left")
+
+        new_index = current_index[:]
+
+        # Check down right move
+        new_index[0] += 1
+        
+        if (new_index[0] < self.m
+            and self.board[new_index[0]][new_index[1]] != "X"
+            and self.board[new_index[0]][new_index[1]] != "N"
+            and self.board[new_index[0]][new_index[1]] != "2"):
+            
+            possible_moves.append("down right")
+
+
+        return possible_moves
+    
     
     
     def _choose_between_moves(self):
