@@ -216,6 +216,8 @@ class Tron:
                 p2_move_direction = self.cpu_player.cpu_hex_move(self.board,
                                                                  difficulty)
                 
+                print(p2_move_direction)
+                
             p2_move_outcome = self.board_class.process_hex_move(players_turn,
                                                                 p2_move_direction)
                  

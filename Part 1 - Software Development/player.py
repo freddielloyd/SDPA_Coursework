@@ -269,8 +269,8 @@ class ComputerPlayer(PlayerClass):
             cpu_move = random.choice(('left',
                                       'right',
                                       'up left',
-                                      'up right'
-                                      'down left'
+                                      'up right',
+                                      'down left',
                                       'down right'))
             
         
@@ -279,6 +279,8 @@ class ComputerPlayer(PlayerClass):
             
             # Retrieve non-suicidal directions
             possible_moves = self._legal_hex_moves(self.board)
+            
+            print(self.board)
             
             if len(possible_moves) > 0:
 
@@ -289,8 +291,8 @@ class ComputerPlayer(PlayerClass):
                 cpu_move = random.choice(('left',
                                           'right',
                                           'up left',
-                                          'up right'
-                                          'down left'
+                                          'up right',
+                                          'down left',
                                           'down right'))            
             
         # Hard difficulty is a smart move in the direction with most available 
@@ -305,7 +307,12 @@ class ComputerPlayer(PlayerClass):
             if len(possible_moves) == 0:
                 
                 # Crash in random direction
-                cpu_move = random.choice(('left','right','up','down'))
+                cpu_move = random.choice(('left',
+                                          'right',
+                                          'up left',
+                                          'up right',
+                                          'down left',
+                                          'down right'))  
 
             
             elif len(possible_moves) == 1:
@@ -316,7 +323,7 @@ class ComputerPlayer(PlayerClass):
 
             elif len(possible_moves) > 1:
                 
-                cpu_move = self._choose_between_moves()
+                cpu_move = self._choose_between_hex_moves()
 
         # Return chosen move of any difficulty level
         return cpu_move
@@ -427,7 +434,7 @@ class ComputerPlayer(PlayerClass):
         if (new_index[1] >= 0
             and self.board[new_index[0]][new_index[1]] != "X"
             and self.board[new_index[0]][new_index[1]] != "N"
-            and self.board[new_index[0]][new_index[1]] != "2"):
+            and self.board[new_index[0]][new_index[1]] != "1"):
             
             possible_moves.append("left")
 
@@ -439,7 +446,7 @@ class ComputerPlayer(PlayerClass):
         if (new_index[1] < self.m 
             and self.board[new_index[0]][new_index[1]] != "X"
             and self.board[new_index[0]][new_index[1]] != "N"
-            and self.board[new_index[0]][new_index[1]] != "2"):
+            and self.board[new_index[0]][new_index[1]] != "1"):
             
             possible_moves.append("right")
 
@@ -451,7 +458,7 @@ class ComputerPlayer(PlayerClass):
         if (new_index[0] >= 0
             and self.board[new_index[0]][new_index[1]] != "X"
             and self.board[new_index[0]][new_index[1]] != "N"
-            and self.board[new_index[0]][new_index[1]] != "2"):
+            and self.board[new_index[0]][new_index[1]] != "1"):
             
             possible_moves.append("up left")
 
@@ -465,7 +472,7 @@ class ComputerPlayer(PlayerClass):
             and new_index[1] < self.m
             and self.board[new_index[0]][new_index[1]] != "X"
             and self.board[new_index[0]][new_index[1]] != "N"
-            and self.board[new_index[0]][new_index[1]] != "2"):
+            and self.board[new_index[0]][new_index[1]] != "1"):
             
             possible_moves.append("up right")
     
@@ -479,7 +486,7 @@ class ComputerPlayer(PlayerClass):
             and new_index[1] >= 0
             and self.board[new_index[0]][new_index[1]] != "X"
             and self.board[new_index[0]][new_index[1]] != "N"
-            and self.board[new_index[0]][new_index[1]] != "2"):
+            and self.board[new_index[0]][new_index[1]] != "1"):
             
             possible_moves.append("down left")
 
@@ -491,7 +498,7 @@ class ComputerPlayer(PlayerClass):
         if (new_index[0] < self.m
             and self.board[new_index[0]][new_index[1]] != "X"
             and self.board[new_index[0]][new_index[1]] != "N"
-            and self.board[new_index[0]][new_index[1]] != "2"):
+            and self.board[new_index[0]][new_index[1]] != "1"):
             
             possible_moves.append("down right")
 
@@ -610,9 +617,7 @@ class ComputerPlayer(PlayerClass):
             for i in range(len(max_indexes)):
                 
                 max_directions.append(pos_moves[max_indexes[i]])
-                
-            # print("Max directions are: ")
-            # print(max_directions)  
+    
                 
             cpu_move = random.choice(max_directions)
             
@@ -632,12 +637,198 @@ class ComputerPlayer(PlayerClass):
                 
         return cpu_move
     
+    
+    def _choose_between_hex_moves(self):
+        """
+        Assesses which move the computer should make in a hexagon game 
+        and returns it.
+        
+        Returns:
+            cpu_move - the selected 'best' move for the computer
+        """
+        
+        print(self.board)
+        
+        # Retrieve current position of player 2
+        for i in range(len(self.board)):
+            if "2" in self.board[i]:
+                 current_index = [i, self.board[i].index("2")]
+         
+        current_row = int(current_index[0])
+        current_column = int(current_index[1])
+         
+         # Check for number of possible moves directly left and right
+        number_pos_moves_right = 0
+        number_pos_moves_left = 0
+        
+        for i in range(len(self.board)):
+            
+            if i < current_column:
+                if self.board[current_row][i] == " ":
+                    number_pos_moves_left += 1
+                else:
+                    number_pos_moves_left = 0
+                    
+            elif i > current_column:
+                if self.board[current_row][i] == " ":
+                    number_pos_moves_right += 1
+                else:
+                    break
+        
+        # Check for number of legal moves up left and down right
+        number_pos_moves_up_left = 0
+        number_pos_moves_down_right = 0
+        
+        for i in range(len(self.board)):
+            
+            if i < current_row:
+                if self.board[i][current_column] == " ":
+                    number_pos_moves_up_left += 1
+                else:
+                    number_pos_moves_up_left = 0
+                    
+            elif i > current_row:
+                if self.board[i][current_column] == " ":
+                    number_pos_moves_down_right += 1
+                else:
+                    break
+                
+                
+        copy_index = current_index[:]
+                
+        # Check for number of legal moves up right and down left
+        number_pos_moves_up_right = 0
+        
+        copy_index[0] -= 1 
+        copy_index[1] += 1 
+   
+        while(copy_index[0] >= 0
+            and copy_index[1] < self.m
+            and self.board[copy_index[0]][copy_index[1]] != "X"
+            and self.board[copy_index[0]][copy_index[1]] != "N"
+            and self.board[copy_index[0]][copy_index[1]] != "1"):                   
+            
+                number_pos_moves_up_right += 1
+                
+                copy_index[0] -= 1 
+                copy_index[1] += 1 
+                
+                
+        copy_index = current_index[:]
+
+        number_pos_moves_down_left = 0
+        
+        copy_index[0] += 1 
+        copy_index[1] -= 1 
+        
+        while(copy_index[0] < self.m
+            and copy_index[1] >= 0
+            and self.board[copy_index[0]][copy_index[1]] != "X"
+            and self.board[copy_index[0]][copy_index[1]] != "N"
+            and self.board[copy_index[0]][copy_index[1]] != "1"):     
+            
+                number_pos_moves_down_left += 1
+                
+                copy_index[0] += 1 
+                copy_index[1] -= 1 
+    
+
+        pos_moves = ['left',
+                    'right',
+                    'up left',
+                    'up right',
+                    'down left',
+                    'down right']
+        
+        # Purposely same order as pos_moves so can retrieve later
+        number_pos_moves = [number_pos_moves_left,
+                            number_pos_moves_right,
+                            number_pos_moves_up_left,
+                            number_pos_moves_up_right,
+                            number_pos_moves_down_left,
+                            number_pos_moves_down_right]
+               
+        max_pos_moves = max(number_pos_moves)
+
+
+        # If there is only one max direction
+        if number_pos_moves.count(max_pos_moves) == 1:
+            
+            # Retrieve 'LRUD'
+            max_index = number_pos_moves.index(max_pos_moves)
+        
+            cpu_move = pos_moves[max_index]
+        
+        
+        # If there is more than one max direction
+        elif number_pos_moves.count(max_pos_moves) > 1:
+            
+            # Make a copy so original list unaffected
+            number_pos_moves_copy = number_pos_moves.copy()
+            
+            max_indexes = []
+            
+            # Retrieve indexes within pos_moves of maximum directions
+            while max_pos_moves in number_pos_moves_copy:
+                
+                max_indexes.append(
+                number_pos_moves_copy.index(max_pos_moves)
+                )
+                
+                # Mark position of max move already appended with N/A
+                number_pos_moves_copy[max_indexes[0]] = "N/A"
+                
+                if len(max_indexes) == 2:
+                
+                    number_pos_moves_copy[max_indexes[1]] = "N/A"
+                    
+                elif len(max_indexes) == 3:
+                
+                    number_pos_moves_copy[max_indexes[2]] = "N/A"
+                    
+                elif len(max_indexes) == 4:
+                
+                    number_pos_moves_copy[max_indexes[3]] = "N/A"
+                    
+                elif len(max_indexes) == 5:
+                
+                    number_pos_moves_copy[max_indexes[4]] = "N/A"
+                    
+                elif len(max_indexes) == 6:
+                
+                    number_pos_moves_copy[max_indexes[5]] = "N/A"
+                    
+            
+            # Retrieve the multiple max directions from their indexes
+            max_directions = []
+            
+            for i in range(len(max_indexes)):
+                
+                max_directions.append(pos_moves[max_indexes[i]])
+                
+                
+            cpu_move = random.choice(max_directions)
+            
+            # Check to see that there will be a possible legal move
+            # on next turn after chosen move is processed
+            pos_moves_next_turn = self._check_next_hex_move(cpu_move)
+        
+            
+            if len(pos_moves_next_turn) == 0:
+            
+                # Remove suicidal move from choices
+                max_directions.remove(cpu_move)
+                
+                # Choose move from remaining max directions
+                cpu_move = random.choice(max_directions)
+                
+        return cpu_move
+    
         
      
         
     def _check_next_move(self,
-                         cpu_move):
-        
+                         cpu_move): 
        """
        Checks how many legal moves can be made on the next turn given
        the selected computer move, returns which moves these are.
@@ -669,21 +860,104 @@ class ComputerPlayer(PlayerClass):
            # Update board copy with player 2's position if they move left
            board_copy[new_index[0]][new_index[1]] = "2" 
            
-       if cpu_move == "right":
+       elif cpu_move == "right":
            
            new_index[1] += 1
            
            board_copy[current_index[0]][current_index[1]] = "X"
            board_copy[new_index[0]][new_index[1]] = "2"
            
-       if cpu_move == "up":
+       elif cpu_move == "up":
            
            new_index[0] -= 1
            
            board_copy[current_index[0]][current_index[1]] = "X"
            board_copy[new_index[0]][new_index[1]] = "2" 
                       
-       if cpu_move == "down":
+       elif cpu_move == "down":
+           
+           new_index[0] += 1
+           
+           board_copy[current_index[0]][current_index[1]] = "X"
+           board_copy[new_index[0]][new_index[1]] = "2"
+           
+       
+       # Check what moves will be available on the next turn given
+       # the chosen direction
+       pos_moves_next_turn = self._legal_moves(board_copy)  
+           
+       return pos_moves_next_turn
+   
+    
+   
+    def _check_next_hex_move(self,
+                             cpu_move):
+       """
+       Checks how many legal moves can be made on the next turn given
+       the selected computer move in a hexagon gae, returns which moves 
+       these are.
+       
+       Parameters: 
+           cpu_move - The selected computer move
+           
+       Returns:
+           pos_moves_next_turn - What legal moves are available on the next turn
+       """
+       
+       # Create a copy of the board to not affect the actual board
+       # Needs to be a deep copy for a list of lists
+       board_copy = copy.deepcopy(self.board)
+       
+       
+       for i in range(len(board_copy)):
+           if "2" in board_copy[i]:
+               current_index = [i, board_copy[i].index("2")]
+               
+       new_index = current_index[:]
+               
+       if cpu_move == "left":
+           
+           new_index[1] -= 1
+           
+           # Make array position before moving = "X"
+           board_copy[current_index[0]][current_index[1]] = "X"
+           # Update board copy with player 2's position if they move left
+           board_copy[new_index[0]][new_index[1]] = "2" 
+           
+       elif cpu_move == "right":
+           
+           new_index[1] += 1
+           
+           board_copy[current_index[0]][current_index[1]] = "X"
+           board_copy[new_index[0]][new_index[1]] = "2"
+           
+       elif cpu_move == "up left":
+           
+           new_index[0] -= 1
+           
+           board_copy[current_index[0]][current_index[1]] = "X"
+           board_copy[new_index[0]][new_index[1]] = "2" 
+           
+                      
+       elif cpu_move == "up right":
+           
+            
+           new_index[0] -= 1
+           new_index[1] += 1
+           
+           board_copy[current_index[0]][current_index[1]] = "X"
+           board_copy[new_index[0]][new_index[1]] = "2" 
+           
+           
+       elif cpu_move == "down left":  
+            
+           new_index[0] += 1
+           new_index[1] -= 1
+           
+           board_copy[current_index[0]][current_index[1]] = "X"
+           board_copy[new_index[0]][new_index[1]] = "2" 
+                      
+       elif cpu_move == "down right":
            
            new_index[0] += 1
            

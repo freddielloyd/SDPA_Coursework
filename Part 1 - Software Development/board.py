@@ -295,106 +295,42 @@ class BoardClass:
         "1" = position of player 1
         "2" = position of player 2
         "X" = space visited by player 1 or player 2
+        "N" = space that will not be represented in hexagon
         
         Returns:
             self.board - the initial hex board created
         """
-                
-        
-        # BOARD SIZE MUST BE AN ODD NUMBER SO PUT EXCEPTION FOR THIS
-        # and at least 5 or greater
-    
         
         self.board = [[" " for x in range (self.m)] for y in range(self.m)]
-        self.board[0][0] = "N" #top left corner
-        self.board[self.m-1][self.m-1] = "N" #bottom right corner
-              
         
-        self.board[0][(self.m//2)] = "1" # Top left corner of hex
+        # Start positions of board match up with start positions in hex
+        self.board[0][(self.m//2)] = "1" # Top left corner of hex 
         self.board[self.m-1][(self.m//2)] = "2" # Bottom right corner of hex
-        #self.board[self.m-1][self.m-1] = "2" # Bottom right corner of hex
+        
+        # "N"'s of top and bottom rows
+        self.board[0][:(self.m//2)] = list("N" * len(self.board[0][:(self.m//2)]))
+        self.board[self.m-1][(self.m//2)+1:] = list("N" * len(self.board[self.m-1][(self.m//2)+1:]))
 
-        final_row = self.m-1
+        # "N"'s of second top and second bottom rows
+        self.board[1][:(self.m//2)-1] = list("N" * len(self.board[1][:(self.m//2)-1]))
+        self.board[self.m-2][(self.m//2)+2:] = list("N" * len(self.board[self.m-2][(self.m//2)+2:]))
         
-        row = self.m-1
+        if self.m >= 7:
+            self.board[2][:(self.m//2)-2] = list("N" * len(self.board[2][:(self.m//2)-2]))
+            self.board[self.m-3][(self.m//2)+3:] = list("N" * len(self.board[self.m-3][(self.m//2)+3:]))
         
-        l = self.m
+        if self.m >= 9:
+            self.board[3][:(self.m//2)-3] = list("N" * len(self.board[3][:(self.m//2)-3]))
+            self.board[self.m-4][(self.m//2)+4:] = list("N" * len(self.board[self.m-4][(self.m//2)+4:]))
         
-        while (l//2) > 1:
-            self.board[0][(l//2)-1] = "N" #final top row needed
-            self.board[(l//2)-1][0] = "N" #final bottom row needed
+        if self.m >= 11:
+            self.board[4][:(self.m//2)-4] = list("N" * len(self.board[4][:(self.m//2)-4]))
+            self.board[self.m-5][(self.m//2)+5:] = list("N" * len(self.board[self.m-5][(self.m//2)+5:]))
+        
+        if self.m >= 13:
+            self.board[5][:(self.m//2)-5] = list("N" * len(self.board[5][:(self.m//2)-5]))
+            self.board[self.m-6][(self.m//2)+6:] = list("N" * len(self.board[self.m-6][(self.m//2)+6:]))
 
-            self.board[1][(l//2)-2] = "N"
-            
-            if l >= 9:
-                self.board[2][(l//2)-3] = "N"
-                
-            if l >= 11:
-                self.board[3][(l//2)-4] = "N"
-            
-            self.board[final_row][(l//2)+2] = "N" #final bottom row needed
-            self.board[row-1][self.m-1] = "N" 
-            
-            #self.board[row-1][(l//2)-2] = "O"
-            self.board[self.m-2][self.m-2] = "N"
-
-            # if l >= 9:
-            #     self.board[row-1][(l//2)-3] = "O"
-                
-            # if l >= 11:
-            #     self.board[row-1][(l//2)-4] = "O"
-
-            # self.board[final_row][(l//2)-1] = "O"
-            # self.board[row-1][0] = "O"
-            
-            l = l - 2
-            
-            row = row - 1
-        
-        
-        # board = [[" " for x in range (m)] for y in range(m)]
-        # board[0][0] = "N" #top left corner
-        # board[m-1][m-1] = "N" #bottom right corner     
-        
-        # board[0][(m//2)] = "1" # Top left corner of hex
-        # board[m-1][(m//2)] = "2" # Bottom right corner of hex
-
-        # final_row = m-1
-        
-        # row = m-1
-        
-        # l = m
-        
-        # while (l//2) > 1:
-        #     board[0][(l//2)-1] = "N" #final top col needed
-        #     board[(l//2)-1][0] = "N" #final bottom row needed
-
-        #     board[1][(l//2)-2] = "N"
-            
-        #     if l >= 9:
-        #         board[2][(l//2)-3] = "N"
-                
-        #     if l >= 11:
-        #         board[3][(l//2)-4] = "N"
-            
-        #     board[final_row][(l//2)+2] = "N" #final bottom row needed
-        #     board[row-1][m-1] = "N" #last col
-            
-        #     #board[row-1][(l//2)+2] = "N"
-        #     board[m-2][m-2] = "N"
-
-        #     # if l >= 9:
-        #     #     self.board[row-1][(l//2)-3] = "O"
-                
-        #     # if l >= 11:
-        #     #     self.board[row-1][(l//2)-4] = "O"
-
-        #     #board[row-1][] = "O"          
-        #     l = l - 2
-        #     row = row - 1
-            
-        # board
-            
 
         print("\nBoard of size (" + str(self.m) + "x" + str(self.m) + 
               ") created with default locations.")
@@ -408,64 +344,66 @@ class BoardClass:
     
     def output_hex_board(self):
         """Prints the hex board to the console."""
- 
+        
+        # fboard is the board that the hexagon output is based upon
+        # Take deepcopy to not affect the underlying board
         fboard = copy.deepcopy(self.board)
         
-        # a.append(a.pop(0))
-        
-        # for x in range(m):
-        #     fboard[m-1][x+3] = fboard[m-1][x]
-        
-        new_final_row = fboard[self.m-1][:(self.m//2)+1] #shift four three across
+        # Rows below the middle row need to be shifted right:    
+        # Shift bottom row to end
+        new_final_row = fboard[self.m-1][:(self.m//2)+1]
         fboard[self.m-1][self.m//2:] = new_final_row
         
-        new_2ndfinal_row = fboard[self.m-2][:(self.m//2)+2] #shift five two across
+        # Shift second bottom row to end
+        new_2ndfinal_row = fboard[self.m-2][:(self.m//2)+2]
         fboard[self.m-2][(self.m//2)-1:] = new_2ndfinal_row
         
-        new_3rdfinal_row = fboard[self.m-3][:(self.m//2)+3] #shift six one across
-        fboard[self.m-3][(self.m//2)-2:] = new_3rdfinal_row
-        
+        # Shift third bottom row to end
+        if self.m >= 7:
+            new_3rdfinal_row = fboard[self.m-3][:(self.m//2)+3]
+            fboard[self.m-3][(self.m//2)-2:] = new_3rdfinal_row
+            
+        # Shift fourth bottom row to end
+        if self.m >= 9:
+            new_4thfinal_row = fboard[self.m-4][:(self.m//2)+4]
+            fboard[self.m-4][(self.m//2)-3:] = new_4thfinal_row
+            
+        # Shift fifth bottom row to end
+        if self.m >= 11:
+            new_5thfinal_row = fboard[self.m-5][:(self.m//2)+5]
+            fboard[self.m-5][(self.m//2)-4:] = new_5thfinal_row
+            
+        # Shift sixth bottom row to end
+        if self.m >= 13:
+            new_6thfinal_row = fboard[self.m-6][:(self.m//2)+6]
+            fboard[self.m-6][(self.m//2)-5:] = new_6thfinal_row
 
-        #print(fboard)
         
-        fboard[0][0] = "O" #top left corner
-        fboard[self.m-1][0] = "O" #bottom left corner
-        
-        final_row = self.m-1
-        
-        row = self.m-1
-        
-        l = self.m
-        
-        while (l//2) > 1:
-            fboard[0][(l//2)-1] = "O" #final top row needed
-            fboard[(l//2)-1][0] = "O" #final bottom row needed
-            fboard[1][(l//2)-2] = "O"          
-            if l >= 9:
-                fboard[2][(l//2)-3] = "O"              
-            if l >= 11:
-                fboard[3][(l//2)-4] = "O"          
-            fboard[final_row][(l//2)-1] = "O" #final bottom row needed
-            fboard[row-1][0] = "O" #first col         
-            fboard[row-1][(l//2)-2] = "O"
-            if l >= 9:
-                fboard[row-1][(l//2)-3] = "O"                
-            if l >= 11:
-                fboard[row-1][(l//2)-4] = "O"
-            fboard[final_row][(l//2)-1] = "O"
-            fboard[row-1][0] = "O"   
-            
-            #fboard[final_row][(l//2)+2] = " " #final bottom row needed
-            #fboard[row-1][self.m-1] = " " 
-            
-            #fboard[m-2][m-2] = " "
-            
-            #fboard[m-1][m-1] = " "
+        # Top bottom rows
+        fboard[0][:(self.m//2)] = list("O" * len(fboard[0][:(self.m//2)]))
+        fboard[self.m-1][:(self.m//2)] = list("O" * len(fboard[self.m-1][:(self.m//2)]))
 
-            l = l - 2         
-            row = row - 1
-            
-        #print(fboard)
+        # Second top and second bottom rows
+        fboard[1][:(self.m//2)-1] = list("O" * len(fboard[1][:(self.m//2)-1]))
+        fboard[self.m-2][:(self.m//2)-1] = list("O" * len(fboard[self.m-2][:(self.m//2)-1]))
+
+        if self.m >= 7:
+            fboard[2][:(self.m//2)-2] = list("O" * len(fboard[2][:(self.m//2)-2]))
+            fboard[self.m-3][:(self.m//2)-2] = list("O" * len(fboard[self.m-3][:(self.m//2)-2]))
+
+        if self.m >= 9:
+            fboard[3][:(self.m//2)-3] = list("O" * len(fboard[3][:(self.m//2)-3]))
+            fboard[self.m-4][:(self.m//2)-3] = list("O" * len(fboard[self.m-4][:(self.m//2)-3]))
+
+        if self.m >= 11:
+            fboard[4][:(self.m//2)-4] = list("O" * len(fboard[4][:(self.m//2)-4]))
+            fboard[self.m-5][:(self.m//2)-4] = list("O" * len(fboard[self.m-5][:(self.m//2)-4]))
+        
+        if self.m >= 13:
+            fboard[5][:(self.m//2)-5] = list("O" * len(fboard[5][:(self.m//2)-5]))
+            fboard[self.m-6][:(self.m//2)-5] = list("O" * len(fboard[self.m-6][:(self.m//2)-5]))
+ 
+      
 
         for y in range(self.m):
             
