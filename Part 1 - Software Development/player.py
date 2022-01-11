@@ -35,7 +35,7 @@ class PlayerClass:
 
     def _ask_player_move(self, prompt):
         """
-        Asks player for move, raises exception if invalid.
+        Asks player for move, raises exception if invalid move entered.
         
         Parameters: 
             prompt - The question to be asked to the player
@@ -50,8 +50,7 @@ class PlayerClass:
                     and player_move != "right" and player_move != "r"
                     and player_move != "up" and player_move != "u"
                     and player_move != "down" and player_move != "d"):
-                        raise InvalidDirectionError
-                    
+                        raise InvalidDirectionError     
             except InvalidDirectionError:
                 print("\nDirection must be left (l), right (r), up (u) or down (d)! "
                       "Please enter a valid direction!")
@@ -62,7 +61,7 @@ class PlayerClass:
     def _ask_player_hex_move(self, prompt):
         """
         Asks player for move in a hexagon game, raises exception 
-        if invalid.
+        if invalid move entered.
         
         Parameters: 
             prompt - The question to be asked to the player
@@ -83,12 +82,10 @@ class PlayerClass:
                     and player_move != "dl" and player_move != "ld"
                     and player_move != "down right" and player_move != "right down"
                     and player_move != "dr" and player_move != "rd"):
-                        raise InvalidDirectionError
-                    
+                        raise InvalidDirectionError      
             except InvalidDirectionError:
                 print("\nDirection must be left (l), right (r), up left (ul/lu), "
                       "up right (ur/ru), down left (dl/ld) or down right (dr/rd)! ")
-                      
                 print("\nPlease enter a valid direction!")
             else:
                 return player_move
@@ -217,7 +214,9 @@ class ComputerPlayer(PlayerClass):
             
         
         # Hard difficulty is a smart move in the direction with most available 
-        # spaces, whilst avoiding moves that in result in suicide next turn.
+        # spaces, choosing the one which results in the highest number of
+        # possible legal moves on the next turn if there are multiple maximum
+        # directions.
         elif difficulty == "hard" or difficulty == "h":
             
             possible_moves = self._legal_moves(self.board)
@@ -243,6 +242,289 @@ class ComputerPlayer(PlayerClass):
 
         # Return chosen move of any difficulty level
         return cpu_move
+    
+  
+    def _legal_moves(self, board):
+        """Given the state of a board, returns what legal directions the cpu
+        player can move in on a regular square board.
+        
+        Parameters: 
+            board - The board to check the possible legal moves for
+            
+        Returns:
+            possible_moves - The legal directions that can be moved in
+        """
+        
+        # Receives a board argument to be able to check legal moves
+        # for either the actual board or a copy board
+        #board = board
+        
+        for i in range(len(board)):          
+            if "2" in board[i]:
+                current_index = [i, board[i].index("2")]
+                    
+        # Create empty list to append legal moves to
+        possible_moves = []
+        
+        # Create a copy of current index of player 2 to be able to check
+        # each direction indiviually
+        new_index = current_index[:]
+        
+        # Check left move
+        new_index[1] -= 1
+            
+        if (new_index[1] >= 0
+            and board[new_index[0]][new_index[1]] != "X"
+            and board[new_index[0]][new_index[1]] != "1"):
+            
+            possible_moves.append("left")
+
+        new_index = current_index[:]
+        
+        # Check right move
+        new_index[1] += 1
+            
+        if (new_index[1] < self.m 
+            and board[new_index[0]][new_index[1]] != "X"
+            and board[new_index[0]][new_index[1]] != "1"):
+            
+            possible_moves.append("right")
+
+        new_index = current_index[:]
+        
+        # Check up move
+        new_index[0] -= 1
+            
+        if (new_index[0] >= 0
+            and board[new_index[0]][new_index[1]] != "X"
+            and board[new_index[0]][new_index[1]] != "1"):
+            
+            possible_moves.append("up")
+
+        new_index = current_index[:]
+
+        # Check down move
+        new_index[0] += 1
+        
+        if (new_index[0] < self.m 
+            and board[new_index[0]][new_index[1]] != "X"
+            and board[new_index[0]][new_index[1]] != "1"):
+            
+            possible_moves.append("down")
+
+        return possible_moves
+    
+    
+    def _choose_between_moves(self):
+        """
+        Assesses which move the computer should make and returns it.
+        
+        Returns:
+            cpu_move - the selected 'best' move for the computer
+        """
+        
+        # Retrieve current position of player 2
+        for i in range(len(self.board)):
+            if "2" in self.board[i]:
+                 current_index = [i, self.board[i].index("2")]
+         
+        current_row = int(current_index[0])
+        current_column = int(current_index[1])
+         
+         # Check for number of possible moves directly left and right
+        number_pos_moves_right = 0
+        number_pos_moves_left = 0
+        
+        for i in range(len(self.board)):
+            
+            if i < current_column:
+                if self.board[current_row][i] == " ":
+                    number_pos_moves_left += 1
+                else:
+                    number_pos_moves_left = 0
+                    
+            elif i > current_column:
+                if self.board[current_row][i] == " ":
+                    number_pos_moves_right += 1
+                else:
+                    break
+        
+        # Check for number of legal moves directly up and down
+        number_pos_moves_up = 0
+        number_pos_moves_down = 0
+        
+        for i in range(len(self.board)):
+            
+            if i < current_row:
+                if self.board[i][current_column] == " ":
+                    number_pos_moves_up += 1
+                else:
+                    number_pos_moves_up = 0
+                    
+            elif i > current_row:
+                if self.board[i][current_column] == " ":
+                    number_pos_moves_down += 1
+                else:
+                    break
+                
+
+        pos_moves = ["left", "right", "up", "down"]
+        
+        # Purposely same order as pos_moves so can retrieve later
+        number_pos_moves = [number_pos_moves_left,
+                            number_pos_moves_right,
+                            number_pos_moves_up,
+                            number_pos_moves_down]
+        
+        print(number_pos_moves)
+               
+        max_pos_moves = max(number_pos_moves)
+
+
+        # If there is only one max direction
+        if number_pos_moves.count(max_pos_moves) == 1:
+            
+            # Retrieve 'LRUD'
+            max_index = number_pos_moves.index(max_pos_moves)
+        
+            cpu_move = pos_moves[max_index]
+        
+        
+        # If there is more than one max direction
+        elif number_pos_moves.count(max_pos_moves) > 1:
+            
+            max_indexes = []
+            
+            # Retrieve indexes within pos_moves of maximum directions
+            for i in range(len(number_pos_moves)):
+                    if number_pos_moves[i] == max_pos_moves:
+                        
+                        max_indexes.append(
+                            number_pos_moves.index(number_pos_moves[i])
+                            )
+                        
+                        number_pos_moves[i] = "N/A"
+
+            # Retrieve the multiple max directions from their indexes
+            max_directions = []
+            
+            for i in range(len(max_indexes)):
+                max_directions.append(pos_moves[max_indexes[i]])
+                
+            print(max_directions)
+
+            # Retrieve the number of legal moves that can be on the next turn 
+            # if move in each of the max directions
+            number_moves_next_turn = []
+    
+            for direction in max_directions:
+                
+                pos_moves_next_turn = self._check_next_move(direction)
+                
+                number_moves_next_turn.append(len(pos_moves_next_turn))
+                
+            print(number_moves_next_turn)
+                
+
+            max_moves_next_turn = max(number_moves_next_turn)
+            
+            # If one max direction has most moves next turn, move in that 
+            # direction
+            if number_moves_next_turn.count(max_moves_next_turn) == 1:
+                
+                max_moves_index = number_moves_next_turn.index(max_moves_next_turn)
+        
+                cpu_move = max_directions[max_moves_index]
+                
+                
+            # If two or more max directions have equal moves next turn,
+            # choose randomly between them
+            elif number_moves_next_turn.count(max_moves_next_turn) > 1:
+                
+                max_indexes = []
+                
+                for i in range(len(number_moves_next_turn)):
+                    
+                    if number_moves_next_turn[i] == max_moves_next_turn:
+                        
+                        max_indexes.append(
+                            number_moves_next_turn.index(number_moves_next_turn[i])
+                            )
+                        
+                        number_moves_next_turn[i] = "N/A"
+       
+                best_directions = []
+            
+                for i in range(len(max_indexes)):
+                
+                    best_directions.append(max_directions[max_indexes[i]])
+                  
+                cpu_move = random.choice(best_directions)
+                
+        return cpu_move
+    
+    
+    def _check_next_move(self,
+                         cpu_move): 
+       """
+       Checks how many legal moves can be made on the next turn given
+       the selected computer move, returns which moves these are.
+       
+       Parameters: 
+           cpu_move - The selected computer move
+           
+       Returns:
+           pos_moves_next_turn - What legal moves are available on the next turn
+       """
+       
+       # Create a copy of the board to not affect the actual board
+       # Needs to be a deep copy for a list of lists
+       board_copy = copy.deepcopy(self.board)
+       
+       
+       for i in range(len(board_copy)):
+           if "2" in board_copy[i]:
+               current_index = [i, board_copy[i].index("2")]
+               
+       new_index = current_index[:]
+               
+       if cpu_move == "left":
+           
+           new_index[1] -= 1
+           
+           # Make array position before moving = "X"
+           board_copy[current_index[0]][current_index[1]] = "X"
+           # Update board copy with player 2's position if they move left
+           board_copy[new_index[0]][new_index[1]] = "2" 
+           
+       elif cpu_move == "right":
+           
+           new_index[1] += 1
+           
+           board_copy[current_index[0]][current_index[1]] = "X"
+           board_copy[new_index[0]][new_index[1]] = "2"
+           
+       elif cpu_move == "up":
+           
+           new_index[0] -= 1
+           
+           board_copy[current_index[0]][current_index[1]] = "X"
+           board_copy[new_index[0]][new_index[1]] = "2" 
+                      
+       elif cpu_move == "down":
+           
+           new_index[0] += 1
+           
+           board_copy[current_index[0]][current_index[1]] = "X"
+           board_copy[new_index[0]][new_index[1]] = "2"
+           
+       
+       # Check what moves will be available on the next turn given
+       # the chosen direction
+       pos_moves_next_turn = self._legal_moves(board_copy)  
+           
+       return pos_moves_next_turn
+    
     
     
     
@@ -329,79 +611,6 @@ class ComputerPlayer(PlayerClass):
         return cpu_move
     
     
-            
-        
-    def _legal_moves(self, board):
-        """Given the state of a board, returns what legal directions the cpu
-        player can move in on a regular square board.
-        
-        Parameters: 
-            board - The board to check the possible legal moves for
-            
-        Returns:
-            possible_moves - The legal directions that can be moved in
-        """
-        
-        # Receives a board argument to be able to check legal moves
-        # for either the actual board or a copy board
-        self.board = board
-        
-        for i in range(len(self.board)):          
-            if "2" in self.board[i]:
-                current_index = [i, self.board[i].index("2")]
-                    
-        # Create empty list to append legal moves to
-        possible_moves = []
-        
-        # Create a copy of current index of player 2 to be able to check
-        # each direction indiviually
-        new_index = current_index[:]
-        
-        # Check left move
-        new_index[1] -= 1
-            
-        if (new_index[1] >= 0
-            and self.board[new_index[0]][new_index[1]] != "X"
-            and self.board[new_index[0]][new_index[1]] != "1"):
-            
-            possible_moves.append("left")
-
-        new_index = current_index[:]
-        
-        # Check right move
-        new_index[1] += 1
-            
-        if (new_index[1] < self.m 
-            and self.board[new_index[0]][new_index[1]] != "X"
-            and self.board[new_index[0]][new_index[1]] != "1"):
-            
-            possible_moves.append("right")
-
-        new_index = current_index[:]
-        
-        # Check up move
-        new_index[0] -= 1
-            
-        if (new_index[0] >= 0
-            and self.board[new_index[0]][new_index[1]] != "X"
-            and self.board[new_index[0]][new_index[1]] != "1"):
-            
-            possible_moves.append("up")
-
-        new_index = current_index[:]
-
-        # Check down move
-        new_index[0] += 1
-        
-        if (new_index[0] < self.m 
-            and self.board[new_index[0]][new_index[1]] != "X"
-            and self.board[new_index[0]][new_index[1]] != "1"):
-            
-            possible_moves.append("down")
-
-        return possible_moves
-    
-          
     def _legal_hex_moves(self, board):
         """Given the state of a board, returns what legal directions the cpu
         player can move in on a hexagon board.
@@ -504,138 +713,6 @@ class ComputerPlayer(PlayerClass):
 
 
         return possible_moves
-    
-    
-    
-    def _choose_between_moves(self):
-        """
-        Assesses which move the computer should make and returns it.
-        
-        Returns:
-            cpu_move - the selected 'best' move for the computer
-        """
-        
-        # Retrieve current position of player 2
-        for i in range(len(self.board)):
-            if "2" in self.board[i]:
-                 current_index = [i, self.board[i].index("2")]
-         
-        current_row = int(current_index[0])
-        current_column = int(current_index[1])
-         
-         # Check for number of possible moves directly left and right
-        number_pos_moves_right = 0
-        number_pos_moves_left = 0
-        
-        for i in range(len(self.board)):
-            
-            if i < current_column:
-                if self.board[current_row][i] == " ":
-                    number_pos_moves_left += 1
-                else:
-                    number_pos_moves_left = 0
-                    
-            elif i > current_column:
-                if self.board[current_row][i] == " ":
-                    number_pos_moves_right += 1
-                else:
-                    break
-        
-        # Check for number of legal moves directly up and down
-        number_pos_moves_up = 0
-        number_pos_moves_down = 0
-        
-        for i in range(len(self.board)):
-            
-            if i < current_row:
-                if self.board[i][current_column] == " ":
-                    number_pos_moves_up += 1
-                else:
-                    number_pos_moves_up = 0
-                    
-            elif i > current_row:
-                if self.board[i][current_column] == " ":
-                    number_pos_moves_down += 1
-                else:
-                    break
-                
-
-        pos_moves = ["left", "right", "up", "down"]
-        
-        # Purposely same order as pos_moves so can retrieve later
-        number_pos_moves = [number_pos_moves_left,
-                            number_pos_moves_right,
-                            number_pos_moves_up,
-                            number_pos_moves_down]
-               
-        max_pos_moves = max(number_pos_moves)
-
-
-        # If there is only one max direction
-        if number_pos_moves.count(max_pos_moves) == 1:
-            
-            # Retrieve 'LRUD'
-            max_index = number_pos_moves.index(max_pos_moves)
-        
-            cpu_move = pos_moves[max_index]
-        
-        
-        # If there is more than one max direction
-        elif number_pos_moves.count(max_pos_moves) > 1:
-            
-            # Make a copy so original list unaffected
-            number_pos_moves_copy = number_pos_moves.copy()
-            
-            # Retrieve indexes within pos_moves of maximum directions
-            max_indexes = []
-            
-            while max_pos_moves in number_pos_moves_copy:
-                
-                max_indexes.append(
-                number_pos_moves_copy.index(max_pos_moves)
-                )
-                
-                # Mark position of max move already appended with N/A
-                number_pos_moves_copy[max_indexes[0]] = "N/A"
-                
-                if len(max_indexes) == 2:
-                
-                    number_pos_moves_copy[max_indexes[1]] = "N/A"
-                    
-                elif len(max_indexes) == 3:
-                
-                    number_pos_moves_copy[max_indexes[2]] = "N/A"
-                    
-                elif len(max_indexes) == 4:
-                
-                    number_pos_moves_copy[max_indexes[3]] = "N/A"
-                    
-            
-            # Retrieve the multiple max directions from their indexes
-            max_directions = []
-            
-            for i in range(len(max_indexes)):
-                
-                max_directions.append(pos_moves[max_indexes[i]])
-    
-                
-            cpu_move = random.choice(max_directions)
-            
-            # Check to see that there will be a possible legal move
-            # on next turn after chosen move is processed
-            pos_moves_next_turn = self._check_next_move(cpu_move)
-            
-            #print("Pos moves next turn are: " + str(pos_moves_next_turn))
-            
-            if len(pos_moves_next_turn) == 0:
-            
-                # Remove suicidal move from choices
-                max_directions.remove(cpu_move)
-                
-                # Choose move from remaining max directions
-                cpu_move = random.choice(max_directions)
-                
-        return cpu_move
     
     
     def _choose_between_hex_moves(self):
@@ -824,72 +901,9 @@ class ComputerPlayer(PlayerClass):
                 
         return cpu_move
     
-        
-     
-        
-    def _check_next_move(self,
-                         cpu_move): 
-       """
-       Checks how many legal moves can be made on the next turn given
-       the selected computer move, returns which moves these are.
-       
-       Parameters: 
-           cpu_move - The selected computer move
-           
-       Returns:
-           pos_moves_next_turn - What legal moves are available on the next turn
-       """
-       
-       # Create a copy of the board to not affect the actual board
-       # Needs to be a deep copy for a list of lists
-       board_copy = copy.deepcopy(self.board)
-       
-       
-       for i in range(len(board_copy)):
-           if "2" in board_copy[i]:
-               current_index = [i, board_copy[i].index("2")]
-               
-       new_index = current_index[:]
-               
-       if cpu_move == "left":
-           
-           new_index[1] -= 1
-           
-           # Make array position before moving = "X"
-           board_copy[current_index[0]][current_index[1]] = "X"
-           # Update board copy with player 2's position if they move left
-           board_copy[new_index[0]][new_index[1]] = "2" 
-           
-       elif cpu_move == "right":
-           
-           new_index[1] += 1
-           
-           board_copy[current_index[0]][current_index[1]] = "X"
-           board_copy[new_index[0]][new_index[1]] = "2"
-           
-       elif cpu_move == "up":
-           
-           new_index[0] -= 1
-           
-           board_copy[current_index[0]][current_index[1]] = "X"
-           board_copy[new_index[0]][new_index[1]] = "2" 
-                      
-       elif cpu_move == "down":
-           
-           new_index[0] += 1
-           
-           board_copy[current_index[0]][current_index[1]] = "X"
-           board_copy[new_index[0]][new_index[1]] = "2"
-           
-       
-       # Check what moves will be available on the next turn given
-       # the chosen direction
-       pos_moves_next_turn = self._legal_moves(board_copy)  
-           
-       return pos_moves_next_turn
+
    
     
-   
     def _check_next_hex_move(self,
                              cpu_move):
        """

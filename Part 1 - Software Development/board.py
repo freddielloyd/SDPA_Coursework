@@ -26,6 +26,7 @@ class BoardClass:
         
         self.m = current_game.m
 
+
     def create_board(self):
         """
         Creates the initial board and returns it.
@@ -67,8 +68,7 @@ class BoardClass:
 
         print("#|" + "|".join(str(wall) for wall in hash_array_row) + "|#\n")
         
-        
-        
+               
     def process_move(self, 
                      players_turn, 
                      move_direction):
@@ -212,8 +212,7 @@ class BoardClass:
                 
         return move_result
 
-
-    
+  
     def _update_board(self,
                      players_turn,
                      current_index,
@@ -239,9 +238,7 @@ class BoardClass:
               or players_turn == "cpu"):
             self.board[new_index[0]][new_index[1]] = "2"
 
-        
-    
-        
+             
     def _crash_event(self, 
                      players_turn,
                      game_type):
@@ -281,10 +278,7 @@ class BoardClass:
         print("\nPlayers crashed into each other! Its a draw!"
               "\nTaking you back to game menu!")
         
-        
-        
-        
-        
+    
         
         
     def create_hex_board(self):
@@ -340,8 +334,6 @@ class BoardClass:
         return self.board
 
 
-
-    
     def output_hex_board(self):
         """Prints the hex board to the console."""
         
@@ -403,7 +395,6 @@ class BoardClass:
             fboard[5][:(self.m//2)-5] = list("O" * len(fboard[5][:(self.m//2)-5]))
             fboard[self.m-6][:(self.m//2)-5] = list("O" * len(fboard[self.m-6][:(self.m//2)-5]))
  
-      
 
         for y in range(self.m):
             
@@ -449,8 +440,7 @@ class BoardClass:
         
             print()
             
-            
-            
+                
     def process_hex_move(self, 
                          players_turn, 
                          move_direction):

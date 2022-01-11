@@ -39,7 +39,7 @@ class Tron:
         self.m = self._ask_board_size("Enter the board size: >> ")
         
         self.simultaneous = self._ask_simultaneous(
-            "Do you want to play a simultaenous game? (y/n) >> "
+            "Do you want to play a simultaneous game? (y/n) >> "
             )
         
         self.board_class = BoardClass(self)
@@ -144,7 +144,7 @@ class Tron:
         self.m = self._ask_hex_board_size("Enter the hexagon board size: >> ")
         
         self.simultaneous = self._ask_simultaneous(
-            "Do you want to play a simultaenous game? (y/n) >> "
+            "Do you want to play a simultaneous game? (y/n) >> "
             )
         
         self.board_class = BoardClass(self)
@@ -250,13 +250,6 @@ class Tron:
                 
                 
 
-
-
-
-
-
-
-
     def startup_menu(self):
         """Displays the game's start-up menu, allows player to select
         the desired type of game"""
@@ -349,8 +342,7 @@ class Tron:
                 if board_size <= 3 :
                     raise BoardTooSmallError
                 elif board_size > 20:
-                    raise BoardTooLargeError
-                    
+                    raise BoardTooLargeError     
             except ValueError:
                 print ("\nBoard size must be an integer! "
                        "Please enter a different board size!")
@@ -362,8 +354,7 @@ class Tron:
                       "Please enter a different board size!")
             else:
                 return board_size
-            
-            
+                       
             
     def _ask_cpu_difficulty(self, prompt):
         """
@@ -383,13 +374,13 @@ class Tron:
                 if (difficulty != "easy" and difficulty != "e" 
                     and difficulty != "medium" and difficulty != "m" 
                     and difficulty != "hard" and difficulty != "h"):
-                        raise InvalidCpuDifficulty
-                    
+                        raise InvalidCpuDifficulty      
             except InvalidCpuDifficulty:
                 print("\n Difficulty must be easy, medium or hard! "
                       "Please enter a valid difficulty!")    
             else:
                 return difficulty
+            
             
     def _ask_simultaneous(self, prompt):
         """
@@ -407,12 +398,12 @@ class Tron:
                 simultaneous = input(prompt).lower()
                 if (simultaneous != "yes" and simultaneous != "y"
                     and simultaneous != "no" and simultaneous != "n"):
-                        raise YesNoError    
-                        
+                        raise YesNoError              
             except YesNoError:
                 print("\nPlease enter yes or no!")
             else:
                 return simultaneous
+            
             
     def _ask_hexagon(self, prompt):
         """
@@ -430,15 +421,13 @@ class Tron:
                 hexagon = input(prompt).lower()
                 if (hexagon != "yes" and hexagon != "y"
                     and hexagon != "no" and hexagon != "n"):
-                        raise YesNoError    
-                        
+                        raise YesNoError          
             except YesNoError:
                 print("\nPlease enter yes or no!")
             else:
                 return hexagon
             
-            
-            
+                
     def _ask_hex_board_size(self, prompt):
         """
         Ask player what hexagon board size they would like to play on,
@@ -458,8 +447,7 @@ class Tron:
                 if board_size < 5 :
                     raise BoardTooSmallError
                 elif board_size > 13:
-                    raise BoardTooLargeError    
-                    
+                    raise BoardTooLargeError       
             except ValueError:
                 print ("\nBoard size must be an integer! "
                        "Please enter a different board size!")
@@ -475,11 +463,6 @@ class Tron:
             else:
                 return board_size
             
-            
-            
-            
-            
-
             
 class Error(Exception):
     """Base class for other exceptions"""
@@ -503,8 +486,8 @@ class YesNoError(Error):
 
 
     
-
-Tron() # Run Tron
+if __name__ == '__main__':
+    Tron() # Run Tron
  
  
  
