@@ -3,7 +3,7 @@
 This project aimed at creating a text-based version of the Tron board game using an object-oriented approach. The game works by players taking it in turns to choose a move whilst trying to avoid crashing. In a regular game, the player who survives for the longest wins.
 
 
-To do so, three Python files were created: 
+To achieve this, three Python files were created: 
 - main.py: Main script containing methods to interact with and play the game in the console
 - board.py: Board class to manage the gameplay, process moves and print the board
 - player.py: Contains human and computer player classes to differentiate between players and how they move
@@ -25,7 +25,7 @@ Having chosen the desired configuration of settings, the initial board is displa
 The main.py script contains the Tron class, which represents the actual game. As mentioned, this contains the script that allows the player to interact with the game via the console, as well as the startup menu allowing for the desired choice of game.
 
 Additionally, the file contains helper methods for the four questions that a player must answer to begin a game. Each method has exceptions so that the user must input a valid answer for the question being asked, failure to provide these will not allow the game to continue. They are as follows:
-- The player must answer yes or no to a hexagon game
+- The player must answer yes or no to a hexagon game.
 - The board size must be greater than 3x3 for a reasonable game experience, and less than 20x20 is this is difficult to fit in the console
 - The difficulty must be easy, medium or hard
 - The player must answer yes or no to a simultaneous game. Failure to provide these will not allow the game to continue.
@@ -38,15 +38,14 @@ The parent class contains methods to ask the player what move they would like to
 
 The computer player class represents a non-human player in the game, and contains methods to make its move depending on the difficulty level the player has chosen to play against. The differences in moves is as follows:
 
-- Easy: A random move from the 4 directions
+- Easy: A random move from the 4 directions on a square grid, or the 6 directions on a hexagonal grid
 - Medium: A random move in any non-suicidal direction
-- Hard: A smart move in the direction with the most available spaces, whilst avoiding moves that would result in definite suicide the turn after
+- Hard: A smart move in the direction with the most available spaces. If there are multiple maximum directions, the computer will move in the direction which results in the greatest possible number of moves on the next turn
 
-To choose its move on medium or hard difficulty, a helper method returns the legal moves that are available for the computer to make. 
-
-On hard difficulty, if there are multiple maximum direction moves available, a random choice is made between them.
-
+To choose its move on medium or hard difficulty, a helper method returns the legal moves that are available for the computer to make. The check_next_move function used on hard difficulty calls the legal moves method also, and is itself called in the choose_between_moves function.
 
 ##### board.py
 
 The board file contains the class which manages the board. This is achieved by methods which create the board, process moves, output the board to the console, and display end of game messages.
+
+The processing of a move and subsequent and updating of the board works by marking the position that the player has moved from with a "X", and the new position with "1" or "2" depending on which players turn it is. In a computer game, the computer player is always represented as player 2.
