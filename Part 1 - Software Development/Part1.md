@@ -28,7 +28,7 @@ Additionally, the file contains helper methods for the four questions that a pla
 - The player must answer yes or no to a hexagon game.
 - The board size must be greater than 3x3 for a reasonable game experience, and less than 20x20 is this is difficult to fit in the console
 - The difficulty must be easy, medium or hard
-- The player must answer yes or no to a simultaneous game. Failure to provide these will not allow the game to continue.
+- The player must answer yes or no to a simultaneous game.
 
 ##### player.py
 
