@@ -59,8 +59,6 @@ class Tron:
                                 "(easy/medium/hard): >> "
                 )
                     
-            
-        
         game_active = True    
         
         # Loop for each round of moves within the game
@@ -79,14 +77,14 @@ class Tron:
                                               game_type)
                 Tron() # Exit to game menu
          
-            if p1_move_outcome == "legal":
+            elif p1_move_outcome == "legal":
                 
                 if self.simultaneous == "no" or self.simultaneous == "n":
                 
                     # Only print board after p1 move if not simultaneous game
                     self.board_class.output_board() 
                     
-                else:
+                elif self.simultaneous == "yes" or self.simultaneous == "y":
                     pass
                                         
                 if game_type == "player":
@@ -124,12 +122,9 @@ class Tron:
                         
                         Tron()
                     
-         
                 elif p2_move_outcome == "legal":   
                     
                     self.board_class.output_board()
-                    
-                    
                     
 
     def run_hex_game(self,
@@ -149,15 +144,10 @@ class Tron:
         
         self.board_class = BoardClass(self)
 
-        #self.board = self.board_class.create_board()
         self.board = self.board_class.create_hex_board()
         
-        #print("self.board", self.board)
-
-        #self.board_class.output_board() # Display initial board
         self.board_class.output_hex_board() # Display initial board
-
-        
+      
         self.human_player = HumanPlayer(self)
         
         if game_type == "computer":
@@ -168,8 +158,7 @@ class Tron:
                 "Enter difficulty level of computer player "
                                 "(easy/medium/hard): >> "
                 )
-            
-            
+              
         game_active = True    
         
         # Loop for each round of moves within the game
@@ -182,25 +171,20 @@ class Tron:
             p1_move_outcome = self.board_class.process_hex_move(players_turn, 
                                                                 p1_move_direction)
             
-            #print(self.board)
-            
-            
             if p1_move_outcome == "crash":
                 
                 self.board_class._crash_event(players_turn,
                                               game_type)
                 Tron() # Exit to game menu
          
-            if p1_move_outcome == "legal":
+            elif p1_move_outcome == "legal":
                 
                 if self.simultaneous == "no" or self.simultaneous == "n":
                 
                     # Only print board after p1 move if not simultaneous game
                     self.board_class.output_hex_board()
                     
-                    #print(self.board)
-                    
-                else:
+                elif self.simultaneous == "yes" or self.simultaneous == "s":
                     pass
 
             print() # Creates a space between hexagons
@@ -216,12 +200,9 @@ class Tron:
                 p2_move_direction = self.cpu_player.cpu_hex_move(self.board,
                                                                  difficulty)
                 
-                print(p2_move_direction)
-                
             p2_move_outcome = self.board_class.process_hex_move(players_turn,
                                                                 p2_move_direction)
                  
- 
             if p2_move_outcome == "crash":   
                 
                 self.board_class._crash_event(players_turn,
@@ -243,13 +224,11 @@ class Tron:
                     
                     Tron()
                 
-     
             elif p2_move_outcome == "legal":   
                 
                 self.board_class.output_hex_board()
                 
                 
-
     def startup_menu(self):
         """Displays the game's start-up menu, allows player to select
         the desired type of game"""

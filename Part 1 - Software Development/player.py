@@ -13,11 +13,9 @@ the Tron game.
 
 """
 
-
 import random as random
 
 import copy as copy
-
 
 class PlayerClass:
     """
@@ -45,7 +43,7 @@ class PlayerClass:
         """
         while True:
             try:
-                player_move = input(prompt).lower() # Case of input doesn't matter
+                player_move = input(prompt).lower()
                 if (player_move != "left" and player_move != "l"
                     and player_move != "right" and player_move != "r"
                     and player_move != "up" and player_move != "u"
@@ -56,7 +54,6 @@ class PlayerClass:
                       "Please enter a valid direction!")
             else:
                 return player_move
-            
             
     def _ask_player_hex_move(self, prompt):
         """
@@ -71,7 +68,7 @@ class PlayerClass:
         """
         while True:
             try:
-                player_move = input(prompt).lower() # Case of input doesn't matter
+                player_move = input(prompt).lower()
                 if (player_move != "left" and player_move != "l"
                     and player_move != "right" and player_move != "r"
                     and player_move != "up left" and player_move != "left up"
@@ -90,8 +87,7 @@ class PlayerClass:
             else:
                 return player_move
             
-
-    
+  
 class HumanPlayer(PlayerClass):
     """
     A class to represent a human player in the Tron game,
@@ -155,10 +151,6 @@ class HumanPlayer(PlayerClass):
             
         return player_move
     
-    
-    
-            
-
 
 class ComputerPlayer(PlayerClass):
     """
@@ -173,8 +165,6 @@ class ComputerPlayer(PlayerClass):
                  current_game):
         
         super().__init__(current_game)
-        
-        #self.difficulty = current_game.difficulty
         
     def cpu_move(self, 
                  board,
@@ -221,20 +211,15 @@ class ComputerPlayer(PlayerClass):
             
             possible_moves = self._legal_moves(self.board)
 
-            # print("Number of legal moves is: " + str(len(possible_moves)))
-            # print(possible_moves)
-
             if len(possible_moves) == 0:
                 
                 # Crash in random direction
                 cpu_move = random.choice(('left','right','up','down'))
-
             
             elif len(possible_moves) == 1:
                 
                 # Move in only available direction
                 cpu_move = possible_moves[0]
-
 
             elif len(possible_moves) > 1:
                 
@@ -254,10 +239,6 @@ class ComputerPlayer(PlayerClass):
         Returns:
             possible_moves - The legal directions that can be moved in
         """
-        
-        # Receives a board argument to be able to check legal moves
-        # for either the actual board or a copy board
-        #board = board
         
         for i in range(len(board)):          
             if "2" in board[i]:
@@ -367,16 +348,12 @@ class ComputerPlayer(PlayerClass):
                 else:
                     break
                 
-
         pos_moves = ["left", "right", "up", "down"]
         
-        # Purposely same order as pos_moves so can retrieve later
         number_pos_moves = [number_pos_moves_left,
                             number_pos_moves_right,
                             number_pos_moves_up,
                             number_pos_moves_down]
-        
-        print(number_pos_moves)
                
         max_pos_moves = max(number_pos_moves)
 
@@ -410,8 +387,6 @@ class ComputerPlayer(PlayerClass):
             
             for i in range(len(max_indexes)):
                 max_directions.append(pos_moves[max_indexes[i]])
-                
-            print(max_directions)
 
             # Retrieve the number of legal moves that can be on the next turn 
             # if move in each of the max directions
@@ -421,10 +396,7 @@ class ComputerPlayer(PlayerClass):
                 
                 pos_moves_next_turn = self._check_next_move(direction)
                 
-                number_moves_next_turn.append(len(pos_moves_next_turn))
-                
-            print(number_moves_next_turn)
-                
+                number_moves_next_turn.append(len(pos_moves_next_turn))      
 
             max_moves_next_turn = max(number_moves_next_turn)
             
@@ -555,14 +527,11 @@ class ComputerPlayer(PlayerClass):
                                       'down left',
                                       'down right'))
             
-        
         # Medium diffiulty is a random non-suicidal move
         elif difficulty == "medium" or difficulty == "m":
             
             # Retrieve non-suicidal directions
             possible_moves = self._legal_hex_moves(self.board)
-            
-            print(self.board)
             
             if len(possible_moves) > 0:
 
@@ -583,9 +552,6 @@ class ComputerPlayer(PlayerClass):
             
             possible_moves = self._legal_hex_moves(self.board)
 
-            # print("Number of legal moves is: " + str(len(possible_moves)))
-            # print(possible_moves)
-
             if len(possible_moves) == 0:
                 
                 # Crash in random direction
@@ -596,12 +562,10 @@ class ComputerPlayer(PlayerClass):
                                           'down left',
                                           'down right'))  
 
-            
             elif len(possible_moves) == 1:
                 
                 # Move in only available direction
                 cpu_move = possible_moves[0]
-
 
             elif len(possible_moves) > 1:
                 
@@ -624,11 +588,11 @@ class ComputerPlayer(PlayerClass):
         
         # Receives a board argument to be able to check legal moves
         # for either the actual board or a copy board
-        self.board = board
+        board = board
         
-        for i in range(len(self.board)):          
-            if "2" in self.board[i]:
-                current_index = [i, self.board[i].index("2")]
+        for i in range(len(board)):          
+            if "2" in board[i]:
+                current_index = [i, board[i].index("2")]
                     
         # Create empty list to append legal moves to
         possible_moves = []
@@ -641,9 +605,9 @@ class ComputerPlayer(PlayerClass):
         new_index[1] -= 1
             
         if (new_index[1] >= 0
-            and self.board[new_index[0]][new_index[1]] != "X"
-            and self.board[new_index[0]][new_index[1]] != "N"
-            and self.board[new_index[0]][new_index[1]] != "1"):
+            and board[new_index[0]][new_index[1]] != "X"
+            and board[new_index[0]][new_index[1]] != "N"
+            and board[new_index[0]][new_index[1]] != "1"):
             
             possible_moves.append("left")
 
@@ -653,10 +617,10 @@ class ComputerPlayer(PlayerClass):
         new_index[1] += 1
             
         if (new_index[1] < self.m 
-            and self.board[new_index[0]][new_index[1]] != "X"
-            and self.board[new_index[0]][new_index[1]] != "N"
-            and self.board[new_index[0]][new_index[1]] != "1"):
-            
+            and board[new_index[0]][new_index[1]] != "X"
+            and board[new_index[0]][new_index[1]] != "N"
+            and board[new_index[0]][new_index[1]] != "1"):
+        
             possible_moves.append("right")
 
         new_index = current_index[:]
@@ -665,9 +629,9 @@ class ComputerPlayer(PlayerClass):
         new_index[0] -= 1
             
         if (new_index[0] >= 0
-            and self.board[new_index[0]][new_index[1]] != "X"
-            and self.board[new_index[0]][new_index[1]] != "N"
-            and self.board[new_index[0]][new_index[1]] != "1"):
+            and board[new_index[0]][new_index[1]] != "X"
+            and board[new_index[0]][new_index[1]] != "N"
+            and board[new_index[0]][new_index[1]] != "1"):
             
             possible_moves.append("up left")
 
@@ -679,9 +643,9 @@ class ComputerPlayer(PlayerClass):
         
         if (new_index[0] >= 0
             and new_index[1] < self.m
-            and self.board[new_index[0]][new_index[1]] != "X"
-            and self.board[new_index[0]][new_index[1]] != "N"
-            and self.board[new_index[0]][new_index[1]] != "1"):
+            and board[new_index[0]][new_index[1]] != "X"
+            and board[new_index[0]][new_index[1]] != "N"
+            and board[new_index[0]][new_index[1]] != "1"):
             
             possible_moves.append("up right")
     
@@ -693,9 +657,9 @@ class ComputerPlayer(PlayerClass):
             
         if (new_index[0] < self.m
             and new_index[1] >= 0
-            and self.board[new_index[0]][new_index[1]] != "X"
-            and self.board[new_index[0]][new_index[1]] != "N"
-            and self.board[new_index[0]][new_index[1]] != "1"):
+            and board[new_index[0]][new_index[1]] != "X"
+            and board[new_index[0]][new_index[1]] != "N"
+            and board[new_index[0]][new_index[1]] != "1"):
             
             possible_moves.append("down left")
 
@@ -705,13 +669,12 @@ class ComputerPlayer(PlayerClass):
         new_index[0] += 1
         
         if (new_index[0] < self.m
-            and self.board[new_index[0]][new_index[1]] != "X"
-            and self.board[new_index[0]][new_index[1]] != "N"
-            and self.board[new_index[0]][new_index[1]] != "1"):
+            and board[new_index[0]][new_index[1]] != "X"
+            and board[new_index[0]][new_index[1]] != "N"
+            and board[new_index[0]][new_index[1]] != "1"):
             
             possible_moves.append("down right")
-
-
+            
         return possible_moves
     
     
@@ -723,8 +686,6 @@ class ComputerPlayer(PlayerClass):
         Returns:
             cpu_move - the selected 'best' move for the computer
         """
-        
-        print(self.board)
         
         # Retrieve current position of player 2
         for i in range(len(self.board)):
@@ -840,69 +801,70 @@ class ComputerPlayer(PlayerClass):
         # If there is more than one max direction
         elif number_pos_moves.count(max_pos_moves) > 1:
             
-            # Make a copy so original list unaffected
-            number_pos_moves_copy = number_pos_moves.copy()
-            
+           #  Retrieve indexes within pos_moves of maximum directions
             max_indexes = []
             
-            # Retrieve indexes within pos_moves of maximum directions
-            while max_pos_moves in number_pos_moves_copy:
-                
-                max_indexes.append(
-                number_pos_moves_copy.index(max_pos_moves)
-                )
-                
-                # Mark position of max move already appended with N/A
-                number_pos_moves_copy[max_indexes[0]] = "N/A"
-                
-                if len(max_indexes) == 2:
-                
-                    number_pos_moves_copy[max_indexes[1]] = "N/A"
-                    
-                elif len(max_indexes) == 3:
-                
-                    number_pos_moves_copy[max_indexes[2]] = "N/A"
-                    
-                elif len(max_indexes) == 4:
-                
-                    number_pos_moves_copy[max_indexes[3]] = "N/A"
-                    
-                elif len(max_indexes) == 5:
-                
-                    number_pos_moves_copy[max_indexes[4]] = "N/A"
-                    
-                elif len(max_indexes) == 6:
-                
-                    number_pos_moves_copy[max_indexes[5]] = "N/A"
-                    
-            
+            for i in range(len(number_pos_moves)):
+                    if number_pos_moves[i] == max_pos_moves:
+                        
+                        max_indexes.append(
+                            number_pos_moves.index(number_pos_moves[i])
+                            )
+                        
+                        number_pos_moves[i] = "N/A"
+ 
             # Retrieve the multiple max directions from their indexes
             max_directions = []
             
             for i in range(len(max_indexes)):
-                
                 max_directions.append(pos_moves[max_indexes[i]])
-                
-                
-            cpu_move = random.choice(max_directions)
-            
-            # Check to see that there will be a possible legal move
-            # on next turn after chosen move is processed
-            pos_moves_next_turn = self._check_next_hex_move(cpu_move)
         
-            
-            if len(pos_moves_next_turn) == 0:
-            
-                # Remove suicidal move from choices
-                max_directions.remove(cpu_move)
+            # Retrieve the number of legal moves that can be on the next turn 
+            # if move in each of the max directions
+            number_moves_next_turn = []
+    
+            for direction in max_directions:
                 
-                # Choose move from remaining max directions
-                cpu_move = random.choice(max_directions)
+                pos_moves_next_turn = self._check_next_hex_move(direction)
+                
+                number_moves_next_turn.append(len(pos_moves_next_turn))      
+
+            max_moves_next_turn = max(number_moves_next_turn)
+            
+            # If one max direction has most moves next turn, move in that 
+            # direction
+            if number_moves_next_turn.count(max_moves_next_turn) == 1:
+                
+                max_moves_index = number_moves_next_turn.index(max_moves_next_turn)
+        
+                cpu_move = max_directions[max_moves_index]
+  
+            # If two or more max directions have equal moves next turn,
+            # choose randomly between them
+            elif number_moves_next_turn.count(max_moves_next_turn) > 1:
+                
+                max_indexes = []
+                
+                for i in range(len(number_moves_next_turn)):
+                    
+                    if number_moves_next_turn[i] == max_moves_next_turn:
+                        
+                        max_indexes.append(
+                            number_moves_next_turn.index(number_moves_next_turn[i])
+                            )
+                        
+                        number_moves_next_turn[i] = "N/A"
+        
+                best_directions = []
+            
+                for i in range(len(max_indexes)):
+                
+                    best_directions.append(max_directions[max_indexes[i]])
+                  
+                cpu_move = random.choice(best_directions)
                 
         return cpu_move
-    
 
-   
     
     def _check_next_hex_move(self,
                              cpu_move):
@@ -955,13 +917,11 @@ class ComputerPlayer(PlayerClass):
                       
        elif cpu_move == "up right":
            
-            
            new_index[0] -= 1
            new_index[1] += 1
            
            board_copy[current_index[0]][current_index[1]] = "X"
            board_copy[new_index[0]][new_index[1]] = "2" 
-           
            
        elif cpu_move == "down left":  
             
@@ -981,15 +941,11 @@ class ComputerPlayer(PlayerClass):
        
        # Check what moves will be available on the next turn given
        # the chosen direction
-       pos_moves_next_turn = self._legal_moves(board_copy)  
+       pos_moves_next_turn = self._legal_hex_moves(board_copy)  
            
        return pos_moves_next_turn
    
-   
-   
-
-                        
-
+    
 class Error(Exception):
     """Base class for other exceptions"""
     
